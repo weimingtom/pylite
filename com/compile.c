@@ -102,10 +102,11 @@ void compile_return_clause(lambda_t *lambda, ast_t *ast)
         emit_insn(OP_LOAD_CONST, "%o", operand_none);
 
     if (!stack_is_empty(&lambda->finally_stack)) {
-        int temp = lambda_new_local(lambda);
+		operand_t *label;
+		int temp = lambda_new_local(lambda);
         emit_insn(OP_STORE_LOCAL, "%i", temp);
 
-        operand_t *label = stack_top(&lambda->finally_stack);
+        label = stack_top(&lambda->finally_stack);
         emit_insn(OP_FINALLY_CALL, "%o", label);
         
         emit_insn(OP_LOAD_LOCAL, "%i", temp);
@@ -128,11 +129,14 @@ void compile_group_clause(lambda_t *lambda, ast_t *ast)
  */
 void build_if_clause(lambda_t *lambda, ast_t *ast, operand_t *exit_label)
 {
+	operand_t *else_label;
+	ast_t *then_part;
+	ast_t *cond;
     assert(ast->type == AST_IF_CLAUSE || ast->type == AST_ELIF_CLAUSE);
-    ast_t *cond = ast_get_child(ast, 0);
-    ast_t *then_part = ast_get_child(ast, 1);
+    cond = ast_get_child(ast, 0);
+    then_part = ast_get_child(ast, 1);
 
-    operand_t *else_label = new_label();
+    else_label = new_label();
     branch_false(lambda, cond, else_label);
     compile_clause(lambda, then_part);
     emit_insn(OP_JMP, "%o", exit_label);
@@ -141,10 +145,11 @@ void build_if_clause(lambda_t *lambda, ast_t *ast, operand_t *exit_label)
 
 void compile_if_clause(lambda_t *lambda, ast_t *ast)
 {
+	int i;
     operand_t *exit_label = new_label();
     build_if_clause(lambda, ast, exit_label);
 
-    for (int i = 2; i < ast_child_count(ast); i++) {
+    for (i = 2; i < ast_child_count(ast); i++) {
         ast_t *child = ast_get_child(ast, i);
 
         if (child->type == AST_ELIF_CLAUSE) {
@@ -181,6 +186,8 @@ void compile_param_list(lambda_t *def, ast_t *param_list)
 
 void compile_def_clause(lambda_t *lambda, ast_t *ast)
 {
+	operand_t *target;
+	ast_t *last_clause;
     ast_t *id = ast_get_child(ast, 0);
     ast_t *param_list = ast_get_child(ast, 1);
     ast_t *clause_list = ast_get_child(ast, 2);
@@ -195,19 +202,20 @@ void compile_def_clause(lambda_t *lambda, ast_t *ast)
     leave_local_scope();
 
     // Add return clause
-    ast_t *last_clause = ast_get_last_child(clause_list);
+    last_clause = ast_get_last_child(clause_list);
     if ((last_clause == NULL) || (last_clause->type != AST_RETURN_CLAUSE)) {
         lambda_emit_insn(def, OP_LOAD_CONST, "%o", operand_none);
         lambda_emit_insn(def, OP_RETURN, NULL);
     }
 
     emit_insn(OP_LOAD_CONST, "%o", def);
-    operand_t *target = compile_express(lambda, id);
+    target = compile_express(lambda, id);
     store_operand(lambda, target);
 }
 
 void compile_class_clause(lambda_t *lambda, ast_t *ast)
 {
+	operand_t *target;
     ast_t *id = ast_get_child(ast, 0);
     ast_t *parent = ast_get_child(ast, 1);
     ast_t *clause_list = ast_get_child(ast, 2);
@@ -215,7 +223,7 @@ void compile_class_clause(lambda_t *lambda, ast_t *ast)
     char *name = id->svalue;
     define_symbol(name);
     emit_insn(OP_NEW_CLASS, "%S", name);
-    operand_t *target = compile_express(lambda, id);
+    target = compile_express(lambda, id);
     store_operand(lambda, target);
 
     if (parent != NULL) {
@@ -270,7 +278,7 @@ void compile_clause(lambda_t *lambda, ast_t *ast)
         map(DEF_CLAUSE, def_clause);
         map(CLASS_CLAUSE, class_clause);
         default:
-            assert(false);
+            assert(0);
     }
     ast_stack_pop();
 }

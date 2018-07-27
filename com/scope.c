@@ -6,41 +6,41 @@ stack_template(scope_t *, scope_stack);
 
 scope_t *scope_new(int type)
 {
-    scope_t *this = malloc(sizeof(scope_t));
-    this->type = type;
-    this->lambda = NULL;
-    this->class_name = NULL;
-    list_init(&this->list);
-    return this;
+    scope_t *this_ = malloc(sizeof(scope_t));
+    this_->type = type;
+    this_->lambda = NULL;
+    this_->class_name = NULL;
+    list_init(&this_->list);
+    return this_;
 }
 
-void scope_delete(scope_t *this)
+void scope_delete(scope_t *this_)
 {
-    if (this->class_name)
-        free(this->class_name);
-    free(this);
+    if (this_->class_name)
+        free(this_->class_name);
+    free(this_);
 }
 
-void scope_dump(scope_t *this, xml_file_t *xml_file)
+void scope_dump(scope_t *this_, xml_file_t *xml_file)
 {
     chain_t *chain;
-    list_each (&this->list, chain) {
+    list_each (&this_->list, chain) {
         symbol_t *symbol = to_symbol(chain);
         symbol_dump(symbol, xml_file);
     }
 }
 
-void scope_insert_symbol(scope_t *this, symbol_t *symbol)
+void scope_insert_symbol(scope_t *this_, symbol_t *symbol)
 {
-    if (scope_lookup_symbol(this, symbol->name))
+    if (scope_lookup_symbol(this_, symbol->name))
         return;
-    list_push_back(&this->list, symbol);
+    list_push_back(&this_->list, symbol);
 }
 
-symbol_t *scope_lookup_symbol(scope_t *this, char *name)
+symbol_t *scope_lookup_symbol(scope_t *this_, char *name)
 {
     chain_t *chain;
-    list_each (&this->list, chain) {
+    list_each (&this_->list, chain) {
         symbol_t *symbol = to_symbol(chain);
         if (strcmp(symbol->name, name) == 0)
             return symbol;
@@ -57,11 +57,12 @@ symbol_t *lookup_symbol(char *name)
 
 symbol_t *define_symbol(char *name)
 {
+	scope_t *top;
     symbol_t *symbol = lookup_symbol(name);
     if (symbol != NULL)
         return symbol;
 
-    scope_t *top = scope_stack_top();
+    top = scope_stack_top();
     switch (top->type) {
         case SCOPE_GLOBAL:
             return insert_global_symbol(name);
@@ -87,11 +88,12 @@ symbol_t *insert_global_symbol(char *name)
 
 symbol_t *insert_local_symbol(char *name)
 {
+	lambda_t *lambda;
     scope_t *top = scope_stack_top();
     symbol_t *symbol = symbol_new(SCOPE_LOCAL, name);
     scope_insert_symbol(top, symbol);
 
-    lambda_t *lambda = top->lambda;
+    lambda = top->lambda;
     lambda->local_count++;
     symbol->offset = 0 - lambda->local_count;
     return symbol;
@@ -99,11 +101,12 @@ symbol_t *insert_local_symbol(char *name)
 
 symbol_t *insert_param_symbol(char *name)
 {
+	lambda_t *lambda;
     scope_t *top = scope_stack_top();
     symbol_t *symbol = symbol_new(SCOPE_LOCAL, name);
     scope_insert_symbol(top, symbol);
 
-    lambda_t *lambda = top->lambda;
+    lambda = top->lambda;
     symbol->offset = lambda->param_count;
     lambda->param_count++;
     return symbol;

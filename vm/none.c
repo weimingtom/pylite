@@ -14,19 +14,23 @@ void py_none_init()
 
 py_object_t *py_none_str(int argc, py_object_t *argv[])
 {
+	py_string_t *py_string;
+	py_object_t *this_;
     assert_argc(argc, 1);
-    py_object_t *this = $(argv[0]);
-    py_string_t *py_string = py_string_new("None");
+    this_ = $(argv[0]);
+    py_string = py_string_new("None");
     return $(py_string);
 }
 
 py_object_t *py_none_eq(int argc, py_object_t *argv[])
 {
-    assert(argc == 2);
-    py_object_t *this = $(argv[0]);
-    py_object_t *that = $(argv[1]);
+	py_object_t *this_;
+    py_object_t *that;
+	assert(argc == 2);
+    this_ = $(argv[0]);
+    that = $(argv[1]);
 
-    if (this == that)
+    if (this_ == that)
         return py_true;
     else
         return py_false;
@@ -34,11 +38,13 @@ py_object_t *py_none_eq(int argc, py_object_t *argv[])
 
 py_object_t *py_none_ne(int argc, py_object_t *argv[])
 {
-    assert_argc(argc, 2);
-    py_object_t *this = $(argv[0]);
-    py_object_t *that = $(argv[1]);
+	py_object_t *this_;
+    py_object_t *that;
+	assert_argc(argc, 2);
+    this_ = $(argv[0]);
+    that = $(argv[1]);
 
-    if (this != that)
+    if (this_ != that)
         return py_true;
     else
         return py_false;

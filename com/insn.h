@@ -15,9 +15,9 @@ typedef struct {
 #define to_insn(chain) ((insn_t *)(chain))
 
 extern insn_t *insn_new(int opcode);
-extern void insn_add_operand(insn_t *this, operand_t *operand);
-extern operand_t *insn_get_operand(insn_t *this, int index);
-extern void insn_format(insn_t *this, int opcode, char *format, va_list ap);
-extern void insn_output(insn_t *this, xml_file_t *xml_file);
+extern void insn_add_operand(insn_t *this_, operand_t *operand);
+extern operand_t *insn_get_operand(insn_t *this_, int index);
+extern void insn_format(insn_t *this_, int opcode, char *format, va_list ap);
+extern void insn_output(insn_t *this_, xml_file_t *xml_file);
 
 #endif

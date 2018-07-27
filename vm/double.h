@@ -12,24 +12,26 @@ typedef struct py_double {
 #define py_object_is_double(py_object) (py_object->py_class == py_double_class)
 extern struct py_class *py_double_class;
 extern void py_double_class_init();
-static inline py_double_t *py_double_new(double value)
+static __inline py_double_t *py_double_new(double value)
 {
-    py_double_t *this = py_object_alloc(sizeof(py_double_t), py_double_class);
-    this->value = value;
-    return this;
+    py_double_t *this_ = (py_double_t *)py_object_alloc(sizeof(py_double_t), py_double_class);
+    this_->value = value;
+    return this_;
 }
 
-static inline double py_object_to_double(py_object_t *this)
+static __inline double py_object_to_double(py_object_t *this_)
 {
-    assert(this->py_class == py_double_class);
-    py_double_t *py_double = (py_double_t *)this;
+	py_double_t *py_double;
+    assert(this_->py_class == py_double_class);
+    py_double = (py_double_t *)this_;
     return py_double->value;
 }
 
-static inline int py_object_to_integer(py_object_t *this)
+static __inline int py_object_to_integer(py_object_t *this_)
 {
-    assert(this->py_class == py_double_class);
-    py_double_t *py_double = (py_double_t *)this;
+	py_double_t *py_double;
+    assert(this_->py_class == py_double_class);
+    py_double = (py_double_t *)this_;
     return (int) (py_double->value);
 }
 

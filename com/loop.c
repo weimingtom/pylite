@@ -6,17 +6,19 @@
 
 void compile_break_clause(lambda_t *lambda, ast_t *ast)
 {
+	operand_t *label;
     if (stack_is_empty(&lambda->break_stack))
         compile_error(ast, "break statement not within loop or switch.");
-    operand_t *label = stack_top(&lambda->break_stack);
+    label = stack_top(&lambda->break_stack);
     emit_insn(OP_JMP, "%o", label);
 }
 
 void compile_continue_clause(lambda_t *lambda, ast_t *ast)
 {
+	operand_t *label;
     if (stack_is_empty(&lambda->continue_stack))
         compile_error(ast, "continue statement not within loop.");
-    operand_t *label = stack_top(&lambda->continue_stack);
+    label = stack_top(&lambda->continue_stack);
     emit_insn(OP_JMP, "%o", label);
 }
 
@@ -67,6 +69,7 @@ void compile_while_clause(lambda_t *lambda, ast_t *ast)
  */
 void compile_for_clause(lambda_t *lambda, ast_t *ast)
 {
+	int temp;
     ast_t *id = ast_get_child(ast, 0);
     ast_t *container = ast_get_child(ast, 1);
     ast_t *body = ast_get_child(ast, 2);
@@ -81,7 +84,7 @@ void compile_for_clause(lambda_t *lambda, ast_t *ast)
         define_tuple_items(id);
 
     evaluate_express(lambda, container);
-    int temp = lambda_new_local(lambda);
+    temp = lambda_new_local(lambda);
     emit_insn(OP_ITERATOR, NULL);
     emit_insn(OP_STORE_LOCAL, "%i", temp);
 

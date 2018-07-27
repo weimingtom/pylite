@@ -2,38 +2,43 @@
 #include "branch.h"
 #include "express.h"
 
-bool is_and_express(ast_t *ast)
+int is_and_express(ast_t *ast)
 {
+	ast_t *operator;
     if (ast->type != AST_BINARY_EXPRESS)
-        return false;
-    ast_t *operator = ast_get_child(ast, 1);
+        return 0;
+    operator = ast_get_child(ast, 1);
     return operator->token == TOKEN_AND;
 }
 
-bool is_or_express(ast_t *ast)
+int is_or_express(ast_t *ast)
 {
+	ast_t *operator;
     if (ast->type != AST_BINARY_EXPRESS)
-        return false;
-    ast_t *operator = ast_get_child(ast, 1);
+        return 0;
+    operator = ast_get_child(ast, 1);
     return operator->token == TOKEN_OR;
 }
 
-bool is_compare_express(ast_t *ast)
+int is_compare_express(ast_t *ast)
 {
+	int token;
+	ast_t *operator;
     if (ast->type != AST_BINARY_EXPRESS)
-        return false;
-    ast_t *operator = ast_get_child(ast, 1);
-    int token = operator->token;
+        return 0;
+    operator = ast_get_child(ast, 1);
+    token = operator->token;
     return token == TOKEN_EQ || token == TOKEN_NE ||
            token == '<' || token == TOKEN_LE ||
            token == '>' || token == TOKEN_GE;
 }
 
-bool is_not_express(ast_t *ast)
+int is_not_express(ast_t *ast)
 {
+	ast_t *operator;
     if (ast->type != AST_UNARY_EXPRESS)
-        return false;
-    ast_t *operator = ast_get_child(ast, 0);
+        return 0;
+    operator = ast_get_child(ast, 0);
     return operator->token == '!';
 }
 
@@ -68,16 +73,17 @@ int translate_compare_false(int operator)
 #undef map
 
 void branch_compare_express(lambda_t *lambda, ast_t *ast, 
-                            bool true_label, operand_t *label)
+                            int true_label, operand_t *label)
 {
+	ast_t *right;
+    int opcode;
     ast_t *left = ast_get_child(ast, 0);
     ast_t *operator = ast_get_child(ast, 1);
     assert(operator->type == AST_TOKEN);
-    ast_t *right = ast_get_child(ast, 2);
+    right = ast_get_child(ast, 2);
 
     evaluate_express(lambda, right);
     evaluate_express(lambda, left);
-    int opcode;
     if (true_label)
         opcode = translate_compare_true(operator->token);
     else
@@ -90,6 +96,7 @@ void branch_compare_express(lambda_t *lambda, ast_t *ast,
 
 void branch_true(lambda_t *lambda, ast_t *ast, operand_t *true_label)
 {
+	operand_t *source;
     if (is_and_express(ast)) {
         operand_t *false_label = new_label();
         branch_false(lambda, left, false_label);
@@ -105,7 +112,7 @@ void branch_true(lambda_t *lambda, ast_t *ast, operand_t *true_label)
     }
 
     if (is_compare_express(ast)) {
-        branch_compare_express(lambda, ast, true, true_label);
+        branch_compare_express(lambda, ast, 1, true_label);
         return;
     }
 
@@ -115,12 +122,13 @@ void branch_true(lambda_t *lambda, ast_t *ast, operand_t *true_label)
         return;
     }
 
-    operand_t *source = evaluate_express(lambda, ast);
+    source = evaluate_express(lambda, ast);
     emit_insn(OP_JTRUE, "%o", true_label);
 }
 
 void branch_false(lambda_t *lambda, ast_t *ast, operand_t *false_label)
 {
+	operand_t *source;
     if (is_and_express(ast)) {
         branch_false(lambda, left, false_label);
         branch_false(lambda, right, false_label);
@@ -136,7 +144,7 @@ void branch_false(lambda_t *lambda, ast_t *ast, operand_t *false_label)
     }
 
     if (is_compare_express(ast)) {
-        branch_compare_express(lambda, ast, false, false_label);
+        branch_compare_express(lambda, ast, 0, false_label);
         return;
     }
 
@@ -146,7 +154,7 @@ void branch_false(lambda_t *lambda, ast_t *ast, operand_t *false_label)
         return;
     }
 
-    operand_t *source = evaluate_express(lambda, ast);
+    source = evaluate_express(lambda, ast);
     emit_insn(OP_JFALSE, "%o", false_label);
 }
 

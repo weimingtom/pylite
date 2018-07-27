@@ -18,9 +18,9 @@ typedef struct py_class {
 } py_class_t;
 
 extern py_class_t *py_class_new(char *name);
-extern bool py_class_is_subclass(py_class_t *this, py_class_t *parent);
-extern py_object_t *py_class_load_field(py_class_t *this, 
+extern int py_class_is_subclass(py_class_t *this_, py_class_t *parent);
+extern py_object_t *py_class_load_field(py_class_t *this_, 
                                         struct py_symbol *name);
-extern void py_class_register_natives(py_class_t *this,
+extern void py_class_register_natives(py_class_t *this_,
                                       struct native *natives);
 #endif

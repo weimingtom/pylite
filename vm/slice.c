@@ -6,16 +6,19 @@ py_class_t *py_slice_class;
 
 py_slice_t *py_slice_new(int argc, py_object_t *argv[])
 {
-    assert_argc(argc, 2);
-    py_object_t *start = argv[0];
-    py_object_t *stop = argv[1];
+	py_slice_t *this_;
+	py_object_t *start;
+    py_object_t *stop;
+	assert_argc(argc, 2);
+    start = argv[0];
+    stop = argv[1];
 
-    py_slice_t *this = py_object_alloc(sizeof(py_slice_t), py_slice_class);
-    this->start = start;
-    this->stop = stop;
-    py_object_set_field($(this), py_symbol_start, start);
-    py_object_set_field($(this), py_symbol_stop, stop);
-    return this;
+    this_ = py_object_alloc(sizeof(py_slice_t), py_slice_class);
+    this_->start = start;
+    this_->stop = stop;
+    py_object_set_field($(this_), py_symbol_start, start);
+    py_object_set_field($(this_), py_symbol_stop, stop);
+    return this_;
 }
 
 void py_slice_class_init()
@@ -23,17 +26,17 @@ void py_slice_class_init()
     py_slice_class = py_class_new("slice");
 }
 
-py_object_t *py_slice_parse(py_slice_t *this, int *_start, int *_stop, int size)
+py_object_t *py_slice_parse(py_slice_t *this_, int *_start, int *_stop, int size)
 {
-    int start = cast_integer(this->start);
+    int stop;
+    int start = cast_integer(this_->start);
     if (start < 0)
         vm_throw(py_index_error);
 
-    int stop;
-    if (this->stop == py_none) {
+    if (this_->stop == py_none) {
         stop = size;
     } else {
-        stop = cast_integer(this->stop);
+        stop = cast_integer(this_->stop);
         if (stop < 0)
             stop += size;
     }

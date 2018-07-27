@@ -16,9 +16,9 @@ typedef struct {
 } py_error_t;
 
 extern py_error_t *py_error_new(py_class_t *py_class);
-extern void py_error_add(py_error_t *this, char *file_name, 
+extern void py_error_add(py_error_t *this_, char *file_name, 
                          char *lambda_name, int line_number);
-extern void py_error_dump(py_error_t *this);
+extern void py_error_dump(py_error_t *this_);
 
 extern py_error_t *py_error;
 extern py_class_t *py_exception;
@@ -33,10 +33,10 @@ extern py_class_t *py_runtime_error;
 extern py_class_t *py_io_error;
 extern void py_errors_init(void);
 
-static inline bool py_error_is_stop()
+static __inline int py_error_is_stop()
 {
     if ($(py_error) == py_stop_iteration)
-        return true; 
+        return 1; 
     return py_error->py_class == py_stop_iteration;
 }
 
@@ -45,6 +45,12 @@ static inline bool py_error_is_stop()
         py_error = py_error_new(py_class);  \
         return NULL;                        \
     } while (0)
+
+#define vm_throw_double(py_class)                  \
+	do {									\
+		py_error = py_error_new(py_class);  \
+		return 0;                        \
+	} while (0)
 
 #define vm_rethrow()                        \
     do {                                    \

@@ -10,85 +10,95 @@ int split_string(char *string, const char *seperator, char *fields[])
 {
     int fields_count = 0;
     char *word, *word_save;
+#ifndef _MSC_VER
     word = strtok_r(string, seperator, &word_save);        
+#else
+	word = strtok_s(string, seperator, &word_save);
+#endif
     while (word) {
         fields[fields_count++] = word;
+#ifndef _MSC_VER
         word = strtok_r(NULL, seperator, &word_save);
-    }
+#else
+		word = strtok_s(NULL, seperator, &word_save);
+#endif
+	}
     return fields_count;
 }
 
 #define TEXT_CAPACITY 64
-void text_init(text_t *this)
+void text_init(text_t *this_)
 {
-    this->data = malloc(TEXT_CAPACITY);
-    this->size = 0;
-    this->capacity = TEXT_CAPACITY;
-    this->data[this->size] = 0;
+    this_->data = (char *)malloc(TEXT_CAPACITY);
+    this_->size = 0;
+    this_->capacity = TEXT_CAPACITY;
+    this_->data[this_->size] = 0;
 }
 
-void text_destroy(text_t *this)
+void text_destroy(text_t *this_)
 {
-    free(this->data);
+    free(this_->data);
 }
 
-void text_grow(text_t *this)
+void text_grow(text_t *this_)
 {
-    int old_capacity = this->capacity;
+    int old_capacity = this_->capacity;
     int new_capacity = old_capacity * 2;
 
-    this->data = realloc(this->data, new_capacity);
-    this->size = this->size;
-    this->capacity = new_capacity;
+    this_->data = (char *)realloc(this_->data, new_capacity);
+    this_->size = this_->size;
+    this_->capacity = new_capacity;
 }
 
-void text_put_char(text_t *this, int c)
+void text_put_char(text_t *this_, int c)
 {
     assert(c != EOF);
-    if (this->size + 1 == this->capacity)
-        text_grow(this);
-    this->data[this->size] = c;
-    this->size++;
-    this->data[this->size] = 0;
+    if (this_->size + 1 == this_->capacity)
+        text_grow(this_);
+    this_->data[this_->size] = c;
+    this_->size++;
+    this_->data[this_->size] = 0;
 }
 
-int text_trim_char(text_t *this)
+int text_trim_char(text_t *this_)
 {
-    if (this->size == 0)
+	char c;
+    if (this_->size == 0)
         return 0;
-    this->size--;
-    char c = this->data[this->size];
-    this->data[this->size] = 0;
+    this_->size--;
+    c = this_->data[this_->size];
+    this_->data[this_->size] = 0;
     return c;
 }
 
-void text_put_buffer(text_t *this, char *buffer, int length)
+void text_put_buffer(text_t *this_, char *buffer, int length)
 {
-    while (this->size + length + 1 > this->capacity)
-        text_grow(this);
+    while (this_->size + length + 1 > this_->capacity)
+        text_grow(this_);
 
-    memcpy(this->data + this->size, buffer, length);
-    this->size += length;
-    this->data[this->size] = 0;
+    memcpy(this_->data + this_->size, buffer, length);
+    this_->size += length;
+    this_->data[this_->size] = 0;
 
-    assert(this->size + 1 <= this->capacity);
+    assert(this_->size + 1 <= this_->capacity);
 }
 
-void text_printf(text_t *this, char *format, ...)
+void text_printf(text_t *this_, char *format, ...)
 {
+	char buffer[256];
+    int length;
     va_list ap;
     va_start(ap, format);
 
-    char buffer[256];
-    int length = vsprintf(buffer, format, ap);
+    length = vsprintf(buffer, format, ap);
     assert(length < sizeof(buffer));
-    text_put_buffer(this, buffer, length);
+    text_put_buffer(this_, buffer, length);
 
     va_end(ap);
 }
 
-void text_put_string(text_t *this, char *string)
+void text_put_string(text_t *this_, char *string)
 {
     int length = strlen(string);
-    text_put_buffer(this, string, length);
+    text_put_buffer(this_, string, length);
 }

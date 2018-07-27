@@ -1,3 +1,3 @@
 #include "root.h"
 
-bool trigger = false;
+int trigger = 0;

@@ -13,7 +13,7 @@ typedef struct py_tuple {
 extern py_class_t *py_tuple_class;
 extern void py_tuple_class_init(void);
 extern py_tuple_t *py_tuple_new();
-extern void py_tuple_append(py_tuple_t *this, py_object_t *py_item);
+extern void py_tuple_append(py_tuple_t *this_, py_object_t *py_item);
 extern py_object_t *py_tuple_get_item(int argc, py_object_t *argv[]);
 
 #endif

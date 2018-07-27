@@ -4,21 +4,22 @@
 
 symbol_t *symbol_new(int type, char *name)
 {
-    symbol_t *this = malloc(sizeof(symbol_t));
-    chain_init(&this->chain);
-    this->type = type;
-    this->name = strdup(name);
-    this->offset = 0;
-    return this;
+    symbol_t *this_ = malloc(sizeof(symbol_t));
+    chain_init(&this_->chain);
+    this_->type = type;
+    this_->name = strdup(name);
+    this_->offset = 0;
+    return this_;
 }
 
-void symbol_dump(symbol_t *this, xml_file_t *xml_file)
+void symbol_dump(symbol_t *this_, xml_file_t *xml_file)
 {
-    xml_file_dump(xml_file, "symbol");
+	char *text = NULL;
+
+	xml_file_dump(xml_file, "symbol");
     xml_file_push(xml_file);
 
-    char *text = NULL;
-    switch (this->type) {
+    switch (this_->type) {
         case SCOPE_GLOBAL:
             text = "SCOPE_GLOBAL";
             break;
@@ -32,7 +33,7 @@ void symbol_dump(symbol_t *this, xml_file_t *xml_file)
             break;
     }
     xml_file_dump(xml_file, "type %s", text);
-    xml_file_dump(xml_file, "name %s", this->name);
-    xml_file_dump(xml_file, "offset %d", this->offset);
+    xml_file_dump(xml_file, "name %s", this_->name);
+    xml_file_dump(xml_file, "offset %d", this_->offset);
     xml_file_pop(xml_file);
 }

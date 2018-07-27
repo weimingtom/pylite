@@ -3,6 +3,8 @@
 #include "ast.h"
 #include "gram.tab.h"
 
+#define isblank_(c) ((c) == ' ' || (c) == '\t')
+
 void yyerror(lex_t *lex, ast_t **module, char *msg)
 {
     fprintf(stderr, "SyntaxError:\n");
@@ -10,7 +12,7 @@ void yyerror(lex_t *lex, ast_t **module, char *msg)
     exit(EXIT_FAILURE);
 }
 
-void lex_error(lex_t *this, char *format, ...)
+void lex_error(lex_t *this_, char *format, ...)
 {
     va_list ap;
     va_start(ap, format);
@@ -18,7 +20,7 @@ void lex_error(lex_t *this, char *format, ...)
     fprintf(stderr, "SyntaxError: ");
     vfprintf(stderr, format, ap);
     fprintf(stderr, "\n");
-    fprintf(stderr, "  At %s, line %d\n", this->file_name, this->line_number);
+    fprintf(stderr, "  At %s, line %d\n", this_->file_name, this_->line_number);
     va_end(ap);
 
     exit(EXIT_FAILURE);
@@ -112,24 +114,24 @@ int lex_is_operator(int c)
 
 lex_t *lex_new(char *file_name)
 {
-    lex_t *this = malloc(sizeof(lex_t));
+    lex_t *this_ = malloc(sizeof(lex_t));
     FILE *file = fopen(file_name, "r");
     if (!file) {
         fprintf(stderr, "minipy: can't open file %s\n", file_name);
         exit(EXIT_FAILURE);
     }
 
-    this->file = file;
-    this->file_name = file_name;
-    this->line_number = 1;
+    this_->file = file;
+    this_->file_name = file_name;
+    this_->line_number = 1;
 
-    this->last_tabs = 0;
-    this->tab_length = 4;
-    stack_init(&this->token_stack);
-    return this;
+    this_->last_tabs = 0;
+    this_->tab_length = 4;
+    stack_init(&this_->token_stack);
+    return this_;
 }
 
-ast_t *lex_get_keyword(lex_t *this, char *name)
+ast_t *lex_get_keyword(lex_t *this_, char *name)
 {
     int i;
 
@@ -144,70 +146,71 @@ ast_t *lex_get_keyword(lex_t *this, char *name)
     return NULL;
 }
 
-int lex_get_char(lex_t *this)
+int lex_get_char(lex_t *this_)
 {
-    int c = fgetc(this->file);
+    int c = fgetc(this_->file);
     if (c == '\n')
-        this->line_number++;
+        this_->line_number++;
     return c;
 }
 
-void lex_unget_char(lex_t *this, int c)
+void lex_unget_char(lex_t *this_, int c)
 {
     if (c == EOF)
         return;
     if (c == '\n')
-        this->line_number--;
-    ungetc(c, this->file);
+        this_->line_number--;
+    ungetc(c, this_->file);
 }
 
-int lex_peek_char(lex_t *this)
+int lex_peek_char(lex_t *this_)
 {
-    int c = lex_get_char(this);
-    lex_unget_char(this, c);
+    int c = lex_get_char(this_);
+    lex_unget_char(this_, c);
     return c;
 }
 
-void lex_skip_spaces(lex_t *this)
+void lex_skip_spaces(lex_t *this_)
 {
     int c;
 
-    while (c = lex_get_char(this), isblank(c))
+    while (c = lex_get_char(this_), isblank_(c))
         ;
-    lex_unget_char(this, c);
+    lex_unget_char(this_, c);
 }
 
-void lex_skip_garbage(lex_t *this)
+void lex_skip_garbage(lex_t *this_)
 {
     int c;
 
-    while (c = lex_get_char(this), isblank(c))
+    while (c = lex_get_char(this_), isblank_(c))
         ;
 
     if (c == '#') {
-        while (c = lex_get_char(this), (c != EOF && c != '\n'))
+        while (c = lex_get_char(this_), (c != EOF && c != '\n'))
             ;
     }
 
-    lex_unget_char(this, c);
+    lex_unget_char(this_, c);
 }
 
-ast_t *lex_get_word(lex_t *this)
+ast_t *lex_get_word(lex_t *this_)
 {
-    int c = lex_get_char(this);
+	ast_t *token;
+    text_t text;
+    int c = lex_get_char(this_);
     if (!(isalpha(c) || c == '_')) {
-        lex_unget_char(this, c);
+        lex_unget_char(this_, c);
         return NULL;
     }
 
-    text_t text;
     text_init(&text);
     text_put_char(&text, c);
-    while (c = lex_get_char(this), (isalnum(c) || c == '_'))
+    while (c = lex_get_char(this_), (isalnum(c) || c == '_'))
         text_put_char(&text, c);
-    lex_unget_char(this, c);
+    lex_unget_char(this_, c);
 
-    ast_t *token = lex_get_keyword(this, text.data);
+    token = lex_get_keyword(this_, text.data);
     if (token) {
         text_destroy(&text);
         return token;
@@ -219,86 +222,88 @@ ast_t *lex_get_word(lex_t *this)
     return token;
 }
 
-ast_t *lex_get_double(lex_t *this)
+ast_t *lex_get_double(lex_t *this_)
 {
+    ast_t *token;
+    text_t text;
     int sign = +1;
-    int c = lex_get_char(this);
+    int c = lex_get_char(this_);
     if (!isdigit(c)) {
-        lex_unget_char(this, c);
+        lex_unget_char(this_, c);
         return 0;
     }
 
-    text_t text;
     text_init(&text);
     text_put_char(&text, c);
-    while (c = lex_get_char(this), (isdigit(c) || c == '.'))
+    while (c = lex_get_char(this_), (isdigit(c) || c == '.'))
         text_put_char(&text, c);
-    lex_unget_char(this, c);
+    lex_unget_char(this_, c);
 
-    ast_t *token;
     token = ast_new_token(TOKEN_DOUBLE_CONST);
     token->dvalue = atof(text.data);
     text_destroy(&text);
     return token;
 }
 
-static bool is_quote(int c)
+static int is_quote(int c)
 {
     return c == '"' || c == '\'';
 }
 
-ast_t *lex_get_string(lex_t *this)
+ast_t *lex_get_string(lex_t *this_)
 {
-    int c = lex_get_char(this);
+	ast_t *token;
+    text_t text;
+    int c = lex_get_char(this_);
     if (!is_quote(c)) {
-        lex_unget_char(this, c);
+        lex_unget_char(this_, c);
         return 0;
     }
 
-    text_t text;
     text_init(&text);
-    while (c = lex_get_char(this), (c != EOF && !is_quote(c)))
+    while (c = lex_get_char(this_), (c != EOF && !is_quote(c)))
         text_put_char(&text, c);
     assert(c != EOF);
 
-    ast_t *token = ast_new_token(TOKEN_STRING_CONST);
+    token = ast_new_token(TOKEN_STRING_CONST);
     token->svalue = strdup(text.data);
     text_destroy(&text);
     return token;
 }
 
-ast_t *lex_get_operator(lex_t *this)
+ast_t *lex_get_operator(lex_t *this_)
 {
-    int c = lex_get_char(this);
+    text_t text;
+    int c = lex_get_char(this_);
     if (!lex_is_operator(c)) {
-        lex_unget_char(this, c);
+        lex_unget_char(this_, c);
         return NULL;
     }
 
-    text_t text;
     text_init(&text);
     text_put_char(&text, c);
-    while (c = lex_get_char(this), lex_is_operator(c))
+    while (c = lex_get_char(this_), lex_is_operator(c))
         text_put_char(&text, c);
-    lex_unget_char(this, c);
+    lex_unget_char(this_, c);
 
-    while (true) {
-        ast_t *token = lex_get_keyword(this, text.data);
+    while (1) {
+        ast_t *token = lex_get_keyword(this_, text.data);
         if (token)
             return token;
         c = text_trim_char(&text);
-        lex_unget_char(this, c);
+        lex_unget_char(this_, c);
     }
     text_destroy(&text);
     return NULL;
 }
 
-int lex_guess_tabs(lex_t *this, text_t *text)
+int lex_guess_tabs(lex_t *this_, text_t *text)
 {
+	char *p;
     int tabs = 0;
     int spaces = 0;
 
-    for (char *p = text->data; p < text->data + text->size; p++) {
+    for (p = text->data; p < text->data + text->size; p++) {
         switch (*p) {
             case '\t':
                 tabs++;
@@ -314,24 +319,29 @@ int lex_guess_tabs(lex_t *this, text_t *text)
     }
 
     if (spaces && tabs)
-        lex_error(this, "mix spaces and tabs");
+        lex_error(this_, "mix spaces and tabs");
 
     if (spaces)
-        return spaces / this->tab_length; 
+        return spaces / this_->tab_length; 
     return tabs;
 }
 
-void lex_read_tabs(lex_t *this)
+void lex_read_tabs(lex_t *this_)
 {
-    int c;
+	int this_tabs;
+    int last_tabs; 
+    int i;
+	int c;
     text_t text;
-
+	int count;
+    ast_t *token;
+    
     text_init(&text);
-    while (c = lex_get_char(this), isblank(c))
+    while (c = lex_get_char(this_), isblank_(c))
         text_put_char(&text, c);
-    lex_unget_char(this, c);
-    int this_tabs = lex_guess_tabs(this, &text);
-    int last_tabs = this->last_tabs; 
+    lex_unget_char(this_, c);
+    this_tabs = lex_guess_tabs(this_, &text);
+    last_tabs = this_->last_tabs; 
     text_destroy(&text);
 
     /* Ignore empty line */
@@ -342,8 +352,6 @@ void lex_read_tabs(lex_t *this)
     if (c == '#')
         return;
 
-    int count;
-    ast_t *token;
     if (this_tabs > last_tabs) {
         count = this_tabs - last_tabs;
         token = ast_new_token(TOKEN_BEGIN);
@@ -352,70 +360,72 @@ void lex_read_tabs(lex_t *this)
         token = ast_new_token(TOKEN_END);
     }
 
-    for (int i = 0; i < count; i++)
-        stack_push(&this->token_stack, token);
-    this->last_tabs = this_tabs; 
+	for (i = 0; i < count; i++)
+        stack_push(&this_->token_stack, token);
+    this_->last_tabs = this_tabs; 
 }
 
-ast_t *lex_meet_eof(lex_t *this)
+ast_t *lex_meet_eof(lex_t *this_)
 {
-    for (int i = 0; i < this->last_tabs; i++) {
+	int i;
+    for (i = 0; i < this_->last_tabs; i++) {
         ast_t *token = ast_new_token(TOKEN_BEGIN);
-        stack_push(&this->token_stack, token);
+        stack_push(&this_->token_stack, token);
     }
-    this->last_tabs = 0;
+    this_->last_tabs = 0;
 
-    if (stack_is_empty(&this->token_stack))
+    if (stack_is_empty(&this_->token_stack))
         return NULL;
     else
-        return stack_pop(&this->token_stack);
+        return stack_pop(&this_->token_stack);
 }
 
-ast_t *lex_fetch_token(lex_t *this)
+ast_t *lex_fetch_token(lex_t *this_)
 {
+    int c;
     ast_t *token;
 
-    if (!stack_is_empty(&this->token_stack))
-        return stack_pop(&this->token_stack);
+    if (!stack_is_empty(&this_->token_stack))
+        return stack_pop(&this_->token_stack);
 
-    int c;
-    c = lex_peek_char(this);
+    c = lex_peek_char(this_);
     if (c == EOF)
-        return lex_meet_eof(this);
+        return lex_meet_eof(this_);
 
-    lex_skip_garbage(this);
-    c = lex_get_char(this);
+    lex_skip_garbage(this_);
+    c = lex_get_char(this_);
     if (c == '\n') {
-        lex_read_tabs(this);
+        lex_read_tabs(this_);
         return ast_new_token('\n');
     }
-    lex_unget_char(this, c);
+    lex_unget_char(this_, c);
 
-    if (token = lex_get_word(this)) 
+    if (token = lex_get_word(this_)) 
         return token;
-    if (token = lex_get_operator(this))
+    if (token = lex_get_operator(this_))
         return token;
-    if (token = lex_get_double(this))
+    if (token = lex_get_double(this_))
         return token;
-    if (token = lex_get_string(this))
+    if (token = lex_get_string(this_))
         return token;
 
-    lex_error(this, "unknown character");
+    lex_error(this_, "unknown character");
     return NULL;
 }
 
-ast_t *lex_get_token(lex_t *this)
+ast_t *lex_get_token(lex_t *this_)
 {
-    ast_t *token = lex_fetch_token(this);
+    ast_t *token = lex_fetch_token(this_);
     if (token != NULL) {
-        token->file_name = this->file_name;
-        token->line_number = this->line_number;
+        token->file_name = this_->file_name;
+        token->line_number = this_->line_number;
     }
     return token;
 }
 
 void token_dump(ast_t *ast)
 {
+	int i;
     int token = ast->token;
 
     if (lex_is_operator(token)) {
@@ -426,7 +436,7 @@ void token_dump(ast_t *ast)
         return;
     }
 
-    for (int i = 0; i < KEYWORD_COUNT; i++) {
+    for (i = 0; i < KEYWORD_COUNT; i++) {
         keyword_t *keyword = keyword_array + i; 
         if (keyword->value == token) {
             printf("KEY  %s\n", keyword->name);
@@ -460,10 +470,10 @@ void token_dump(ast_t *ast)
     }
 }
 
-void lex_dump(lex_t *this)
+void lex_dump(lex_t *this_)
 {
     ast_t *token;
 
-    while (token = lex_get_token(this))
+    while (token = lex_get_token(this_))
         token_dump(token);
 }

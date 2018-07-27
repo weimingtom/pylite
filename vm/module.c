@@ -32,23 +32,27 @@ void register_py_module(py_module_t *py_module)
 
 py_module_t *py_module_new(char *dir, char *name)
 {
-    py_module_t *this = py_object_alloc(sizeof(py_module_t), NULL);
+    py_module_t *this_ = py_object_alloc(sizeof(py_module_t), NULL);
     if (dir == NULL)
-        this->dir = NULL;
+        this_->dir = NULL;
     else
-        this->dir = strdup(dir);
-    this->name = strdup(name);
-    return this;
+        this_->dir = strdup(dir);
+    this_->name = strdup(name);
+    return this_;
 }
 
 py_module_t *load_py_module(char *dir, char *name)
 {
+    xml_lex_t *xml_lex;
+    xml_tree_t *xml_root;
+    py_lambda_t *py_lambda;
+    py_object_t *py_result;
+    char py_path[128];
+    char xml_path[128];
     py_module_t *py_module = lookup_py_module(name);
     if (py_module)
         return py_module;
 
-    char py_path[128];
-    char xml_path[128];
     sprintf(py_path, "%s/%s.py", dir, name);
     sprintf(xml_path, "%s/%s.xml", dir, name);
     compile_python(py_path, xml_path);
@@ -56,11 +60,11 @@ py_module_t *load_py_module(char *dir, char *name)
     py_module = py_module_new(dir, name);
     register_py_module(py_module);
 
-    xml_lex_t *xml_lex = xml_lex_new(xml_path);
-    xml_tree_t *xml_root = xml_tree_parse(xml_lex);
+    xml_lex = xml_lex_new(xml_path);
+    xml_root = xml_tree_parse(xml_lex);
 
-    py_lambda_t *py_lambda = py_lambda_load(py_module, xml_root);
-    py_object_t *py_result = vm_call_lambda(py_lambda, 0, vm_stack + sp);
+    py_lambda = py_lambda_load(py_module, xml_root);
+    py_result = vm_call_lambda(py_lambda, 0, vm_stack + sp);
     if (py_result == NULL)
         return NULL;
     return py_module;
@@ -74,21 +78,23 @@ static void invalid_suffix()
 
 static void check_suffix(char *path, char *dir, char *name)
 {
-    char *suffix = rindex(path, '.');
+	char *slash;
+	char *suffix = strrchr(path, '.');
     if (suffix == NULL)
         invalid_suffix();
 
-    char *slash = rindex(path, '/');
+	slash = strrchr(path, '/');
     if (slash == NULL) {
         strcpy(dir, ".");
 
         memcpy(name, path, suffix - path);
         name[suffix - path] = 0;
     } else {
-        memcpy(dir, path, slash - path);
+        char *p;
+		memcpy(dir, path, slash - path);
         dir[slash - path] = 0;
 
-        char *p = slash + 1;
+        p = slash + 1;
         memcpy(name, p, suffix - p);
         name[suffix - p] = 0;
     }
@@ -113,6 +119,7 @@ void check_suffix_test(char *path)
 
 void open_main_module(char *path)
 {
+	py_module_t *py_module;
     char dir[128];
     char name[128];
     check_suffix(path, dir, name);
@@ -130,7 +137,7 @@ void open_main_module(char *path)
     exit(EXIT_SUCCESS);
 #endif
 
-    py_module_t *py_module = load_py_module(dir, name);
+    py_module = load_py_module(dir, name);
     if (py_module == NULL) {
         fflush(stdout);
         py_error_dump(py_error);
@@ -139,45 +146,45 @@ void open_main_module(char *path)
     assert(sp == VM_STACK_DEPTH);
 }
 
-void py_module_import_object(py_module_t *this, char *name, 
+void py_module_import_object(py_module_t *this_, char *name, 
                              py_object_t *py_value)
 {
     py_symbol_t *py_name = py_symbol_new(name);
-    py_object_set_field($(this), py_name, py_value);
+    py_object_set_field($(this_), py_name, py_value);
 }
 
-void py_module_import_double(py_module_t *this, char *name, double value)
+void py_module_import_double(py_module_t *this_, char *name, double value)
 {
     py_symbol_t *py_name = py_symbol_new(name);
     py_double_t *py_value = py_double_new(value);
-    py_object_set_field($(this), py_name, $(py_value));
+    py_object_set_field($(this_), py_name, $(py_value));
 }
 
-void py_module_import_string(py_module_t *this, char *name, char *value)
+void py_module_import_string(py_module_t *this_, char *name, char *value)
 {
     py_symbol_t *py_name = py_symbol_new(name);
     py_string_t *py_value = py_string_new(value);
-    py_object_set_field($(this), py_name, $(py_value));
+    py_object_set_field($(this_), py_name, $(py_value));
 }
 
-void py_module_import_lambda(py_module_t *this, char *name, handler_t value)
+void py_module_import_lambda(py_module_t *this_, char *name, handler_t value)
 {
     py_symbol_t *py_name = py_symbol_new(name);
     py_native_t *py_value = py_native_new(py_name, value);
-    py_object_set_field($(this), py_name, $(py_value));
+    py_object_set_field($(this_), py_name, $(py_value));
 }
 
-void py_module_import_class(py_module_t *this, char *name, py_class_t *value)
+void py_module_import_class(py_module_t *this_, char *name, py_class_t *value)
 {
     py_symbol_t *py_name = py_symbol_new(name);
     py_object_t *py_value = $(value);
-    py_object_set_field($(this), py_name, py_value);
+    py_object_set_field($(this_), py_name, py_value);
 }
 
-void py_module_import_all(py_module_t *this, py_module_t *that)
+void py_module_import_all(py_module_t *this_, py_module_t *that)
 {
     int i;
     field_t field;
     vector_each (&that->field_vector, i, field)
-        vector_push_back(&this->field_vector, field);
+        vector_push_back(&this_->field_vector, field);
 }

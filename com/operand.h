@@ -44,7 +44,7 @@ extern operand_t *operand_local_new(int offset);
 extern operand_t *operand_field_new(char *name);
 extern operand_t *operand_item_new(void);
 extern operand_t *operand_label_new(char *name);
-extern bool operand_is_memory(operand_t *this);
+extern int operand_is_memory(operand_t *this_);
 
 extern operand_t *operand_stack;
 extern operand_t *operand_none;

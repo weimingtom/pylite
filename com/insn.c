@@ -3,30 +3,31 @@
 
 insn_t *insn_new(int opcode)
 {
-    insn_t *this = malloc(sizeof(insn_t));
-    chain_init(&this->chain);
-    this->opcode = opcode_array + opcode;
-    this->operand_count = 0;
-    for (int i = 0; i < MAX_OPERAND; i++)
-        this->operand_array[i] = NULL;
-    return this;
+	int i;
+    insn_t *this_ = malloc(sizeof(insn_t));
+    chain_init(&this_->chain);
+    this_->opcode = opcode_array + opcode;
+    this_->operand_count = 0;
+    for (i = 0; i < MAX_OPERAND; i++)
+        this_->operand_array[i] = NULL;
+    return this_;
 }
 
-void insn_delete(insn_t *this)
+void insn_delete(insn_t *this_)
 {
-    free(this);
+    free(this_);
 }
 
-void insn_add_operand(insn_t *this, operand_t *operand)
+void insn_add_operand(insn_t *this_, operand_t *operand)
 {
-    this->operand_array[this->operand_count] = operand;
-    this->operand_count += 1;
+    this_->operand_array[this_->operand_count] = operand;
+    this_->operand_count += 1;
 }
 
-operand_t *insn_get_operand(insn_t *this, int index)
+operand_t *insn_get_operand(insn_t *this_, int index)
 {
     assert(index < MAX_OPERAND);
-    return this->operand_array[index];
+    return this_->operand_array[index];
 }
 
 /** 
@@ -37,15 +38,16 @@ operand_t *insn_get_operand(insn_t *this, int index)
  * %S   symbol
  * %o   operand
  **/
-void insn_format(insn_t *this, int opcode, char *format, va_list ap)
+void insn_format(insn_t *this_, int opcode, char *format, va_list ap)
 {
-    if (format == NULL)
+	char flag;
+    operand_t *operand = NULL;
+	if (format == NULL)
         return;
 
     assert(format[0] == '%');
-    char flag = format[1];
-    operand_t *operand = NULL;
-
+    flag = format[1];
+    
     switch (flag) {
         case 'i':
             operand = operand_immed_new(va_arg(ap, int));
@@ -75,5 +77,5 @@ void insn_format(insn_t *this, int opcode, char *format, va_list ap)
             assert(0);
     }
 
-    insn_add_operand(this, operand);
+    insn_add_operand(this_, operand);
 }

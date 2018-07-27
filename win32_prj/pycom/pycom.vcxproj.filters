@@ -1,0 +1,290 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="com">
+      <UniqueIdentifier>{8cdcef07-bcdf-4490-b5f3-ae472cba2b85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gen">
+      <UniqueIdentifier>{8928f808-5955-400d-856f-98f40a3db8b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vm">
+      <UniqueIdentifier>{18f8ad52-6b55-4a1f-ba6d-79f33c0c5648}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="utils">
+      <UniqueIdentifier>{447cf466-0791-47a6-936c-884504437b8d}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\com\assign.c">
+      <Filter>com</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\com\ast.c">
+      <Filter>com</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\com\branch.c">
+      <Filter>com</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\com\compile.c">
+      <Filter>com</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\com\except.c">
+      <Filter>com</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\com\express.c">
+      <Filter>com</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\com\insn.c">
+      <Filter>com</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\com\lambda.c">
+      <Filter>com</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\com\lex.c">
+      <Filter>com</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\com\loop.c">
+      <Filter>com</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\com\main.c">
+      <Filter>com</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\com\opcode.c">
+      <Filter>com</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\com\operand.c">
+      <Filter>com</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\com\scope.c">
+      <Filter>com</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\com\symbol.c">
+      <Filter>com</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\com\trace.c">
+      <Filter>com</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\gen\gram.tab.c">
+      <Filter>gen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\utils\list.c">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\utils\stack.c">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\utils\text.c">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\utils\xml_file.c">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\utils\xml_lex.c">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\utils\xml_tree.c">
+      <Filter>utils</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\com\assign.h">
+      <Filter>com</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\com\ast.h">
+      <Filter>com</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\com\branch.h">
+      <Filter>com</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\com\compile.h">
+      <Filter>com</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\com\except.h">
+      <Filter>com</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\com\express.h">
+      <Filter>com</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\com\insn.h">
+      <Filter>com</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\com\lambda.h">
+      <Filter>com</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\com\lex.h">
+      <Filter>com</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\com\loop.h">
+      <Filter>com</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\com\opcode.h">
+      <Filter>com</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\com\operand.h">
+      <Filter>com</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\com\root.h">
+      <Filter>com</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\com\scope.h">
+      <Filter>com</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\com\symbol.h">
+      <Filter>com</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\com\trace.h">
+      <Filter>com</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\gen\gram.tab.h">
+      <Filter>gen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\vm\alloc.h">
+      <Filter>vm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\vm\asm.h">
+      <Filter>vm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\vm\bool.h">
+      <Filter>vm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\vm\byte.h">
+      <Filter>vm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\vm\cast.h">
+      <Filter>vm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\vm\class.h">
+      <Filter>vm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\vm\compile.h">
+      <Filter>vm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\vm\dict.h">
+      <Filter>vm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\vm\dispatch.h">
+      <Filter>vm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\vm\double.h">
+      <Filter>vm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\vm\error.h">
+      <Filter>vm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\vm\file.h">
+      <Filter>vm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\vm\gc.h">
+      <Filter>vm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\vm\lambda.h">
+      <Filter>vm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\vm\list.h">
+      <Filter>vm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\vm\method.h">
+      <Filter>vm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\vm\mod.h">
+      <Filter>vm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\vm\mod_builtin.h">
+      <Filter>vm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\vm\mod_math.h">
+      <Filter>vm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\vm\mod_os.h">
+      <Filter>vm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\vm\mod_socket.h">
+      <Filter>vm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\vm\mod_sys.h">
+      <Filter>vm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\vm\mod_temp.h">
+      <Filter>vm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\vm\module.h">
+      <Filter>vm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\vm\native.h">
+      <Filter>vm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\vm\none.h">
+      <Filter>vm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\vm\object.h">
+      <Filter>vm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\vm\objects.h">
+      <Filter>vm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\vm\opcode.h">
+      <Filter>vm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\vm\range.h">
+      <Filter>vm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\vm\root.h">
+      <Filter>vm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\vm\slice.h">
+      <Filter>vm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\vm\socket.h">
+      <Filter>vm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\vm\string.h">
+      <Filter>vm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\vm\symbol.h">
+      <Filter>vm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\vm\temp.h">
+      <Filter>vm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\vm\tuple.h">
+      <Filter>vm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\vm\vm.h">
+      <Filter>vm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\utils\list.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\utils\stack.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\utils\text.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\utils\vector.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\utils\xml_file.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\utils\xml_lex.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\utils\xml_tree.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\com\gram.y">
+      <Filter>com</Filter>
+    </None>
+    <None Include="..\..\com\Grammar">
+      <Filter>com</Filter>
+    </None>
+    <None Include="..\..\com\Makefile">
+      <Filter>com</Filter>
+    </None>
+    <None Include="..\..\gen\gram.y">
+      <Filter>gen</Filter>
+    </None>
+  </ItemGroup>
+</Project>

@@ -18,10 +18,10 @@ typedef struct {
 } scope_t;
 
 scope_t *scope_new(int type);
-extern void scope_delete(scope_t *this);
-extern void scope_dump(scope_t *this, xml_file_t *xml_file);
-extern void scope_insert_symbol(scope_t *this, symbol_t *symbol);
-extern symbol_t *scope_lookup_symbol(scope_t *this, char *name);
+extern void scope_delete(scope_t *this_);
+extern void scope_dump(scope_t *this_, xml_file_t *xml_file);
+extern void scope_insert_symbol(scope_t *this_, symbol_t *symbol);
+extern symbol_t *scope_lookup_symbol(scope_t *this_, char *name);
 
 extern void enter_global_scope();
 extern void leave_global_scope();

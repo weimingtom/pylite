@@ -13,7 +13,7 @@ typedef struct py_slice {
 extern py_class_t *py_slice_class;
 extern void py_slice_class_init();
 extern py_slice_t *py_slice_new(int argc, py_object_t *argv[]);
-extern py_object_t *py_slice_parse(py_slice_t *this, 
+extern py_object_t *py_slice_parse(py_slice_t *this_, 
                                    int *start, int *stop, int size);
 
 #endif

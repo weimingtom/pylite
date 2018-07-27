@@ -16,32 +16,33 @@ py_class_t *py_io_error;
 
 py_error_t *py_error_new(py_class_t *py_class)
 {
-    py_error_t *this = py_object_alloc(sizeof(py_error_t), py_class);
-    stack_init(&this->location_stack);
-    return this;
+    py_error_t *this_ = py_object_alloc(sizeof(py_error_t), py_class);
+    stack_init(&this_->location_stack);
+    return this_;
 }
 
-void py_error_free(py_error_t *this)
+void py_error_free(py_error_t *this_)
 {
     int i;
     location_t location;
 
-    vector_each (&this->location_stack, i, location) {
+    vector_each (&this_->location_stack, i, location) {
         free(location.file_name);
         free(location.lambda_name);
     }
-    stack_destroy(&this->location_stack);
+    stack_destroy(&this_->location_stack);
 }
 
-py_string_t *py_error_to_string(py_error_t *this)
+py_string_t *py_error_to_string(py_error_t *this_)
 {
-    text_t text;
-    text_init(&text);
-    text_printf(&text, "%s:\n", this->py_class->name);
-
+	py_string_t *py_result;
     int i;
     location_t *location;
-    vector_each_address (&this->location_stack, i, location) {
+    text_t text;
+    text_init(&text);
+    text_printf(&text, "%s:\n", this_->py_class->name);
+
+    vector_each_address (&this_->location_stack, i, location) {
         char *file_name = location->file_name;
         int line_number = location->line_number;
         char *lambda_name = location->lambda_name;
@@ -49,26 +50,28 @@ py_string_t *py_error_to_string(py_error_t *this)
         text_printf(&text, format, file_name, line_number, lambda_name);
     }
 
-    py_string_t *py_result = py_string_new(text.data);
+    py_result = py_string_new(text.data);
     text_destroy(&text);
     return py_result;
 }
 
 py_object_t *py_error_str(int argc, py_object_t *argv[])
 {
+	py_string_t *py_result;
+	py_error_t *this_;
     assert_argc(argc, 1);
-    py_error_t *this = $(argv[0]);
-    py_string_t *py_result = py_error_to_string(this);
+    this_ = $(argv[0]);
+    py_result = py_error_to_string(this_);
     return $(py_result);
 }
 
-void py_error_dump(py_error_t *this)
+void py_error_dump(py_error_t *this_)
 {
-    py_string_t *py_string = py_error_to_string(this);
+    py_string_t *py_string = py_error_to_string(this_);
     fprintf(stderr, "%s", py_string->value);
 }
 
-void py_error_add(py_error_t *this, char *file_name, 
+void py_error_add(py_error_t *this_, char *file_name, 
                   char *lambda_name, int line_number)
 {
     location_t location;
@@ -76,14 +79,14 @@ void py_error_add(py_error_t *this, char *file_name,
     location.file_name = strdup(file_name);
     location.lambda_name = strdup(lambda_name);
     location.line_number = line_number;
-    stack_push(&this->location_stack, location);
+    stack_push(&this_->location_stack, location);
 }
 
 py_object_t *py_error_alloc(py_class_t *py_class)
 {
-    py_error_t *this = py_object_alloc(sizeof(py_error_t), py_class);
-    stack_init(&this->location_stack);
-    return $(this);
+    py_error_t *this_ = py_object_alloc(sizeof(py_error_t), py_class);
+    stack_init(&this_->location_stack);
+    return $(this_);
 }
 
 native_t py_error_natives[] = {

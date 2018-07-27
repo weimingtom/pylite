@@ -53,6 +53,7 @@ operand_t *compile_lambda_express(lambda_t *lambda, ast_t *ast)
 #define map(a, b) case a: opcode = b; break;
 operand_t *compile_binary_express(lambda_t *lambda, ast_t *ast)
 {
+	operand_t *target;
     ast_t *left = ast_get_child(ast, 0);
     ast_t *operator = ast_get_child(ast, 1);
     ast_t *right = ast_get_child(ast, 2);
@@ -82,10 +83,10 @@ operand_t *compile_binary_express(lambda_t *lambda, ast_t *ast)
             return compile_bool_express(lambda, ast);
 
         default:
-            assert(false);
+            assert(0);
     }
 
-    operand_t *target = build_binary_express(lambda, left, opcode, right);
+    target = build_binary_express(lambda, left, opcode, right);
     return target;
 }
 #undef map
@@ -97,7 +98,7 @@ operand_t *compile_unary_express(lambda_t *lambda, ast_t *ast)
 
     assert(operator->type == AST_TOKEN);
     if (ast_is_token(express, TOKEN_DOUBLE_CONST)) {
-        int value = express->dvalue;
+        int value = (int)express->dvalue;
         switch (operator->token) {
             case '+':
                 value = +value;
@@ -137,11 +138,12 @@ operand_t *compile_unary_express(lambda_t *lambda, ast_t *ast)
 
 operand_t *compile_call_express(lambda_t *lambda, ast_t *ast)
 {
+	int i;
     ast_t *callee = ast_get_child(ast, 0);
     ast_t *arg_list = ast_get_child(ast, 1);
     int arg_count = ast_child_count(arg_list);
 
-    for (int i = arg_count - 1; i >= 0; i--) {
+    for (i = arg_count - 1; i >= 0; i--) {
         ast_t *arg = ast_get_child(arg_list, i);
         evaluate_express(lambda, arg);
     }
@@ -152,22 +154,24 @@ operand_t *compile_call_express(lambda_t *lambda, ast_t *ast)
 
 operand_t *compile_item_express(lambda_t *lambda, ast_t *ast)
 {
+	operand_t *item;
     ast_t *array = ast_get_child(ast, 0);
     ast_t *index = ast_get_child(ast, 1);
 
     evaluate_express(lambda, index);
     evaluate_express(lambda, array);
-    operand_t *item = operand_item_new();
+    item = operand_item_new();
     return item;
 }
 
 operand_t *compile_field_express(lambda_t *lambda, ast_t *ast)
 {
-    ast_t *object = ast_get_child(ast, 0);
+    operand_t *field;
+	ast_t *object = ast_get_child(ast, 0);
     ast_t *name = ast_get_child(ast, 1);
 
     evaluate_express(lambda, object);
-    operand_t *field = operand_field_new(name->svalue);
+    field = operand_field_new(name->svalue);
     return field;
 }
 
@@ -178,13 +182,14 @@ operand_t *compile_postfix_express(lambda_t *lambda, ast_t *ast)
 
 operand_t *compile_token_id(lambda_t *lambda, ast_t *ast)
 {
+	operand_t *operand;
     char *name = ast->svalue;
 
     symbol_t *symbol = lookup_symbol(name);
     if (symbol == NULL)
         return operand_global_new(name);
 
-    operand_t *operand = NULL;
+    operand = NULL;
     switch (symbol->type) {
         case SCOPE_GLOBAL:
             operand = operand_global_new(name);
@@ -236,9 +241,9 @@ operand_t *compile_token(lambda_t *lambda, ast_t *ast)
 
 operand_t *compile_list_express(lambda_t *lambda, ast_t *ast)
 {
-    emit_insn(OP_NEW_LIST, "%i", ast_child_count(ast));
     int i;
     ast_t *child;
+    emit_insn(OP_NEW_LIST, "%i", ast_child_count(ast));
     ast_each_child (ast, i, child) {
         evaluate_express(lambda, child);
         emit_insn(OP_LOAD_CONST, "%d", i);
@@ -250,9 +255,9 @@ operand_t *compile_list_express(lambda_t *lambda, ast_t *ast)
 
 operand_t *compile_dict_express(lambda_t *lambda, ast_t *ast)
 {
-    emit_insn(OP_NEW_DICT, NULL);
     int i;
     ast_t *child;
+    emit_insn(OP_NEW_DICT, NULL);
     ast_each_child (ast, i, child) {
         ast_t *key = ast_get_child(child, 0);
         ast_t *value = ast_get_child(child, 1);
@@ -267,7 +272,8 @@ operand_t *compile_dict_express(lambda_t *lambda, ast_t *ast)
 
 operand_t *compile_tuple_express(lambda_t *lambda, ast_t *ast)
 {
-    for (int i = ast_child_count(ast) - 1; i >= 0; i--) {
+	int i;
+    for (i = ast_child_count(ast) - 1; i >= 0; i--) {
         ast_t *child = ast_get_child(ast, i);
         evaluate_express(lambda, child);
     }
@@ -313,7 +319,7 @@ operand_t *compile_express(lambda_t *lambda, ast_t *ast)
         map(TUPLE_EXPRESS, tuple_express);
         map(SLICE_EXPRESS, slice_express);
         default:
-            assert(false);
+            assert(0);
     }
 
     ast_stack_pop();
@@ -323,6 +329,7 @@ operand_t *compile_express(lambda_t *lambda, ast_t *ast)
 
 operand_t *load_operand(lambda_t *lambda, operand_t *source)
 {
+	operand_t *target;
     switch (source->type) {
         case OPERAND_IMMED:
         case OPERAND_STACK:
@@ -354,10 +361,10 @@ operand_t *load_operand(lambda_t *lambda, operand_t *source)
             break;
 
         default:
-            assert(false);
+            assert(0);
     }
 
-    operand_t *target = operand_stack;
+    target = operand_stack;
     return target;
 }
 

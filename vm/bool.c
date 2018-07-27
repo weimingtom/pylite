@@ -17,26 +17,31 @@ void py_bool_init(void)
 
 py_object_t *py_bool_str(int argc, py_object_t *argv[])
 {
+	py_string_t *py_string;
+	char *text;
+    py_object_t *this;
     assert_argc(argc, 1);
-    py_object_t *this = argv[0];
+    this = argv[0];
 
-    char *text;
     if (this == py_true)
         text = "True";
     else if (this == py_false)
         text = "False";
     else
         text = NULL;
-    py_string_t *py_string = py_string_new(text);
+    py_string = py_string_new(text);
 
     return $(py_string);
 }
 
 py_object_t *py_bool_eq(int argc, py_object_t *argv[])
 {
-    assert_argc(argc, 2);
-    py_object_t *this = $(argv[0]);
-    py_object_t *that = $(argv[1]);
+	py_object_t *this;
+    py_object_t *that;
+
+	assert_argc(argc, 2);
+    this = $(argv[0]);
+    that = $(argv[1]);
 
     if (this == that)
         return py_true;
@@ -46,9 +51,11 @@ py_object_t *py_bool_eq(int argc, py_object_t *argv[])
 
 py_object_t *py_bool_ne(int argc, py_object_t *argv[])
 {
+	py_object_t *that;
+	py_object_t *this;
     assert_argc(argc, 2);
-    py_object_t *this = $(argv[0]);
-    py_object_t *that = $(argv[1]);
+    this = $(argv[0]);
+    that = $(argv[1]);
 
     if (this != that)
         return py_true;

@@ -1,6 +1,9 @@
 #ifndef _PY_OBJECT_H
 #define _PY_OBJECT_H
 
+#include <stdlib.h>
+#include "../utils/vector.h"
+
 struct py_class;
 struct py_object;
 struct py_symbol;
@@ -22,23 +25,23 @@ typedef struct py_object {
 
 extern void *py_object_alloc(int size, struct py_class *py_class);
 extern py_object_t *py_object_new(struct py_class *py_class);
-extern py_object_t *py_object_get_field(py_object_t *this, 
+extern py_object_t *py_object_get_field(py_object_t *this_, 
                                         struct py_symbol *py_name);
-extern py_object_t *py_object_load_field(py_object_t *this, 
+extern py_object_t *py_object_load_field(py_object_t *this_, 
                                          struct py_symbol *py_name);
-extern void py_object_set_field(py_object_t *this, 
+extern void py_object_set_field(py_object_t *this_, 
             struct py_symbol *py_name, py_object_t *py_value);
-extern void py_object_dump(py_object_t *this, xml_file_t *xml_file);
+extern void py_object_dump2(py_object_t *this_, struct xml_file_t *xml_file);
 
 struct py_string;
-extern struct py_string *py_object_to_string(py_object_t *this);
+extern struct py_string *py_object_to_string(py_object_t *this_);
 
 struct py_class;
 extern struct py_class *py_object_class;
 extern void py_object_class_init();
 
-static inline bool py_object_is_class(py_object_t *this)
+static __inline int py_object_is_class(py_object_t *this_)
 {
-    return this->py_class == NULL;
+    return this_->py_class == NULL;
 }
 #endif

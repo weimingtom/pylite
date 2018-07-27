@@ -1,5 +1,5 @@
 #include "root.h"
-#include "string.h"
+#include "string_.h"
 #include "cast.h"
 #include "gc.h"
 
@@ -7,17 +7,21 @@ py_class_t *py_double_class;
 
 py_object_t *py_double_str(int argc, py_object_t *argv[])
 {
+	py_string_t *py_string;
+	long lvalue;
+	double dvalue;
+	char buf[32];
+    py_double_t *this_;
     assert_argc(argc, 1);
-    py_double_t *this = $(argv[0]);
+    this_ = $(argv[0]);
 
-    char buf[32];
-    double dvalue = this->value;
-    long lvalue = (long)this->value;
+    dvalue = this_->value;
+    lvalue = (long)this_->value;
     if (dvalue - lvalue == 0)
         sprintf(buf, "%ld", lvalue);
     else
         sprintf(buf, "%g", dvalue);
-    py_string_t *py_string = py_string_new(buf);
+    py_string = py_string_new(buf);
     return $(py_string);
 }
 

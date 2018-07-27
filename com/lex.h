@@ -19,8 +19,8 @@ typedef struct {
     stack_template(struct ast*, token_stack);
 } lex_t;
 
-extern struct ast *lex_get_token(lex_t *this);
+extern struct ast *lex_get_token(lex_t *this_);
 extern lex_t *lex_new(char *file_name);
-extern void lex_dump(lex_t *this);
+extern void lex_dump(lex_t *this_);
 
 #endif

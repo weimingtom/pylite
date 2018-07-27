@@ -9,9 +9,9 @@ operand_t *operand_stack;
 
 operand_t *operand_new(int type)
 {
-    operand_t *this = malloc(sizeof(operand_t));
-    this->type = type;
-    return this;
+    operand_t *this_ = malloc(sizeof(operand_t));
+    this_->type = type;
+    return this_;
 }
 
 void operand_consts_init(void)
@@ -24,76 +24,76 @@ void operand_consts_init(void)
 
 operand_t *operand_immed_new(int immed)
 {
-    operand_t *this = operand_new(OPERAND_IMMED);
-    this->ivalue = immed;
-    return this;
+    operand_t *this_ = operand_new(OPERAND_IMMED);
+    this_->ivalue = immed;
+    return this_;
 }
 
 operand_t *operand_double_new(double dvalue)
 {
-    operand_t *this = operand_new(OPERAND_DOUBLE);
-    this->dvalue = dvalue;
-    return this;
+    operand_t *this_ = operand_new(OPERAND_DOUBLE);
+    this_->dvalue = dvalue;
+    return this_;
 }
 
 operand_t *operand_string_new(char *svalue)
 {
-    operand_t *this = operand_new(OPERAND_STRING);
-    this->svalue = strdup(svalue);
-    return this;
+    operand_t *this_ = operand_new(OPERAND_STRING);
+    this_->svalue = strdup(svalue);
+    return this_;
 }
 
 operand_t *operand_symbol_new(char *name)
 {
-    operand_t *this = operand_new(OPERAND_SYMBOL);
-    this->svalue = strdup(name);
-    return this;
+    operand_t *this_ = operand_new(OPERAND_SYMBOL);
+    this_->svalue = strdup(name);
+    return this_;
 }
 
 operand_t *operand_global_new(char *name)
 {
-    operand_t *this = operand_new(OPERAND_GLOBAL);
-    this->svalue = strdup(name);
-    return this;
+    operand_t *this_ = operand_new(OPERAND_GLOBAL);
+    this_->svalue = strdup(name);
+    return this_;
 }
 
 operand_t *operand_local_new(int offset)
 {
-    operand_t *this = operand_new(OPERAND_LOCAL);
-    this->ivalue = offset;
-    return this;
+    operand_t *this_ = operand_new(OPERAND_LOCAL);
+    this_->ivalue = offset;
+    return this_;
 }
 
 operand_t *operand_item_new(void)
 {
-    operand_t *this = operand_new(OPERAND_ITEM);
-    return this;
+    operand_t *this_ = operand_new(OPERAND_ITEM);
+    return this_;
 }
 
 operand_t *operand_field_new(char *name)
 {
-    operand_t *this = operand_new(OPERAND_FIELD);
-    this->svalue = strdup(name);
-    return this;
+    operand_t *this_ = operand_new(OPERAND_FIELD);
+    this_->svalue = strdup(name);
+    return this_;
 }
 
 operand_t *operand_label_new(char *name)
 {
-    operand_t *this = operand_new(OPERAND_LABEL);
-    this->svalue = strdup(name);
-    return this;
+    operand_t *this_ = operand_new(OPERAND_LABEL);
+    this_->svalue = strdup(name);
+    return this_;
 }
 
-bool operand_is_memory(operand_t *this)
+int operand_is_memory(operand_t *this_)
 {
-    switch (this->type) {
+    switch (this_->type) {
         case OPERAND_GLOBAL:
         case OPERAND_LOCAL:
         case OPERAND_ITEM:
         case OPERAND_FIELD:
-            return true;
+            return 1;
     }
-    return false;
+    return 0;
 }
 
 

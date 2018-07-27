@@ -35,7 +35,7 @@ extern py_class_t *py_lambda_class;
 extern void py_lambda_class_init();
 extern py_lambda_t *py_lambda_load(py_module_t *py_module, 
                                    xml_tree_t *xml_root);
-extern void py_lambda_dump(py_lambda_t *this, xml_file_t *xml_file);
-extern guard_t *py_lambda_locate_guard(py_lambda_t *this, int pc);
+extern void py_lambda_dump(py_lambda_t *this_, xml_file_t *xml_file);
+extern guard_t *py_lambda_locate_guard(py_lambda_t *this_, int pc);
 
 #endif

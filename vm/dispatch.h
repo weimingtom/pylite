@@ -71,9 +71,11 @@ interpret(OP_LABEL)
 
 interpret(OP_NOT)
 {
+	int ok;
+	py_object_t *py_bool;
     pc += 1;
-    py_object_t *py_bool = vm_stack_pop();
-    bool ok = compute_bool(py_bool);
+    py_bool = vm_stack_pop();
+    ok = compute_bool(py_bool);
     if (ok)
         vm_stack_push(py_false);
     else
@@ -188,7 +190,7 @@ interpret(OP_JTRUE)
 {
     int offset = load_immed();
     py_object_t *py_bool = vm_stack_pop();
-    bool ok = compute_bool(py_bool);
+    int ok = compute_bool(py_bool);
     vm_jump(ok, offset);
     break;
 }
@@ -197,7 +199,7 @@ interpret(OP_JFALSE)
 {
     int offset = load_immed();
     py_object_t *py_bool = vm_stack_pop();
-    bool ok = compute_bool(py_bool);
+    int ok = compute_bool(py_bool);
     vm_jump(!ok, offset);
     break;
 }
@@ -205,7 +207,7 @@ interpret(OP_JFALSE)
 interpret(OP_JLT)
 {
     int offset = load_immed();
-    bool ok = jcompare(OP_JLT, 2, vm_stack + sp);
+    int ok = jcompare(OP_JLT, 2, vm_stack + sp);
     vm_stack_eject(2);
     vm_jump(ok, offset);
     break;
@@ -214,7 +216,7 @@ interpret(OP_JLT)
 interpret(OP_JLE)
 {
     int offset = load_immed();
-    bool ok = jcompare(OP_JLE, 2, vm_stack + sp);
+    int ok = jcompare(OP_JLE, 2, vm_stack + sp);
     vm_stack_eject(2);
     vm_jump(ok, offset);
     break;
@@ -223,7 +225,7 @@ interpret(OP_JLE)
 interpret(OP_JEQ)
 {
     int offset = load_immed();
-    bool ok = jcompare(OP_JEQ, 2, vm_stack + sp);
+    int ok = jcompare(OP_JEQ, 2, vm_stack + sp);
     vm_stack_eject(2);
     vm_jump(ok, offset);
     break;
@@ -232,7 +234,7 @@ interpret(OP_JEQ)
 interpret(OP_JNE)
 {
     int offset = load_immed();
-    bool ok = jcompare(OP_JNE, 2, vm_stack + sp);
+    int ok = jcompare(OP_JNE, 2, vm_stack + sp);
     vm_stack_eject(2);
     vm_jump(ok, offset);
     break;
@@ -241,7 +243,7 @@ interpret(OP_JNE)
 interpret(OP_JGE)
 {
     int offset = load_immed();
-    bool ok = jcompare(OP_JGE, 2, vm_stack + sp);
+    int ok = jcompare(OP_JGE, 2, vm_stack + sp);
     vm_stack_eject(2);
     vm_jump(ok, offset);
     break;
@@ -250,7 +252,7 @@ interpret(OP_JGE)
 interpret(OP_JGT)
 {
     int offset = load_immed();
-    bool ok = jcompare(OP_JGT, 2, vm_stack + sp);
+    int ok = jcompare(OP_JGT, 2, vm_stack + sp);
     vm_stack_eject(2);
     vm_jump(ok, offset);
     break;
@@ -258,10 +260,11 @@ interpret(OP_JGT)
 
 interpret(OP_ITERATOR)
 {
+	py_object_t *py_iterator;
     py_object_t *py_object = vm_stack_pop();
     py_object_t *py_field = py_object_load_field(py_object, py_symbol__iter__);
     vm_check_result(py_field, 0);
-    py_object_t *py_iterator = vm_call(py_field, 0, vm_stack + sp);
+    py_iterator = vm_call(py_field, 0, vm_stack + sp);
     vm_push_result(py_iterator, 0);
     pc += 1;
     break;
@@ -446,11 +449,13 @@ interpret(OP_STORE_ITEM)
 // value = object.name
 interpret(OP_LOAD_FIELD)
 {
+	py_object_t *py_value;
+	py_object_t *py_object;
     py_symbol_t *py_name = load_const();
     assert(py_name->py_class == py_symbol_class);
-    py_object_t *py_object = vm_stack_pop();
+    py_object = vm_stack_pop();
 
-    py_object_t *py_value = py_object_load_field(py_object, py_name);
+    py_value = py_object_load_field(py_object, py_name);
     if (py_value == NULL)
         vm_raise(py_attr_error);
     vm_stack_push(py_value);
@@ -465,10 +470,12 @@ interpret(OP_LOAD_FIELD)
 // object.name = value
 interpret(OP_STORE_FIELD)
 {
-    py_symbol_t *py_name = load_const();
+    py_object_t *py_object;
+    py_object_t *py_value;
+	py_symbol_t *py_name = load_const();
     assert(py_name->py_class == py_symbol_class);
-    py_object_t *py_object = vm_stack_pop();
-    py_object_t *py_value = vm_stack_pop();
+    py_object = vm_stack_pop();
+    py_value = vm_stack_pop();
     py_object_set_field(py_object, py_name, py_value);
     pc += 3;
     break;
@@ -502,9 +509,10 @@ interpret(OP_NEW_DICT)
 
 interpret(OP_NEW_TUPLE)
 {
+	int i;
     py_tuple_t *py_tuple = py_tuple_new();
     int count = load_immed();
-    for (int i = 0; i < count; i++) {
+    for (i = 0; i < count; i++) {
         py_object_t *py_item = vm_stack_pop();
         py_tuple_append(py_tuple, py_item);
     }
@@ -581,6 +589,7 @@ interpret(OP_CATCH)
 
 raise_error:
 {
+	guard_t *guard;
     int line_number = vector_get(&py_lambda->line_number_map, pc);
     py_error_add(py_error, py_module->name, py_lambda->name, line_number);
 
@@ -589,7 +598,7 @@ catch_failed:
     sp = bp - py_lambda->local_count; 
     vm_stack_push(py_error);
 
-    guard_t *guard = py_lambda_locate_guard(py_lambda, pc);
+    guard = py_lambda_locate_guard(py_lambda, pc);
     if (guard == NULL)
         vm_abort();
 
@@ -599,15 +608,17 @@ catch_failed:
 
 interpret(OP_FINALLY_CALL)
 {
+	int offset;
     py_double_t *py_temp = py_double_new(pc + 3);
     vm_stack_push(py_temp);
-    int offset = load_immed();
+    offset = load_immed();
     pc = offset;
     break;
 }
 
 interpret(OP_FINALLY_EXIT)
 {
+	int offset;
     int index = load_immed();
     py_object_t *py_offset = vm_stack[bp + index]; 
 
@@ -616,7 +627,7 @@ interpret(OP_FINALLY_EXIT)
         vm_abort();
 
     /* finally_call, return to caller */
-    int offset = py_object_to_integer(py_offset);
+    offset = py_object_to_integer(py_offset);
     pc = offset;
     break;
 }

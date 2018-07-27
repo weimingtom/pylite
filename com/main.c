@@ -30,13 +30,13 @@ extern int yyparse(lex_t *lex, ast_t **ast);
 
 ast_t *front_process(char *file_name)
 {
+    ast_t *ast = NULL;
     lex_t *lex = lex_new(file_name);
     if (flag_dump_lex) {
         lex_dump(lex);
         exit(EXIT_SUCCESS);
     }
 
-    ast_t *ast = NULL;
     yydebug = 0;
     yyparse(lex, &ast);
     ast_locate(ast, file_name);
@@ -62,12 +62,16 @@ void compute_output_path(char *input_path, char *output_path)
 
 int main(int argc, char *argv[])
 {
+	int i;
+	ast_t *module;
+    lambda_t *lambda;
+	xml_file_t *xml_output;
+    char *input_path = NULL;
+    char *output_path = "/dev/stdout";
     if (argc == 1)
         usage();
 
-    char *input_path = NULL;
-    char *output_path = "/dev/stdout";
-    for (int i = 1; i < argc; i++) {
+    for (i = 1; i < argc; i++) {
         if (is_flag("-dump-lex")) {
             flag_dump_lex = 1;
             continue;
@@ -89,10 +93,10 @@ int main(int argc, char *argv[])
 
     xml_stdout = xml_file_new("/dev/stdout");
     operand_consts_init();
-    ast_t *module = front_process(input_path);
-    lambda_t *lambda = compile_module(module);
+    module = front_process(input_path);
+    lambda = compile_module(module);
 
-    xml_file_t *xml_output = xml_file_new(output_path);
+    xml_output = xml_file_new(output_path);
     lambda_output(lambda, xml_output);
     xml_file_delete(xml_stdout);
     return 0;

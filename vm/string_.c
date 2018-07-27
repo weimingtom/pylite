@@ -1,25 +1,27 @@
 #include "root.h"
-#include "string.h"
+#include "string_.h"
 #include "tuple.h"
 #include "slice.h"
-#include "list.h"
+#include "list_.h"
 #include "cast.h"
 
 py_class_t *py_string_class;
 
 py_string_t *py_string_new(char *value)
 {
-    py_string_t *this = py_object_alloc(sizeof(py_string_t), py_string_class);
-    this->value = strdup(value);
-    return this;
+    py_string_t *this_ = py_object_alloc(sizeof(py_string_t), py_string_class);
+    this_->value = strdup(value);
+    return this_;
 }
 
 py_object_t *py_string_islower(int argc, py_object_t *argv[])
 {
+	char *p;
+	py_string_t *this_;
     assert_argc(argc, 1);
-    py_string_t *this = $(argv[0]);
+    this_ = $(argv[0]);
 
-    for (char *p = this->value; *p; p++) {
+    for (p = this_->value; *p; p++) {
         if (!islower((int)*p))
             return py_false;
     }
@@ -28,10 +30,12 @@ py_object_t *py_string_islower(int argc, py_object_t *argv[])
 
 py_object_t *py_string_isupper(int argc, py_object_t *argv[])
 {
+	char *p;
+	py_string_t *this_;
     assert_argc(argc, 1);
-    py_string_t *this = $(argv[0]);
+    this_ = $(argv[0]);
 
-    for (char *p = this->value; *p; p++) {
+    for (p = this_->value; *p; p++) {
         if (!islower((int)*p))
             return py_false;
     }
@@ -40,56 +44,73 @@ py_object_t *py_string_isupper(int argc, py_object_t *argv[])
 
 py_object_t *py_string_lower(int argc, py_object_t *argv[])
 {
-    assert_argc(argc, 1);
-    py_string_t *this = $(argv[0]);
+	py_string_t *that;
+	char *p;
+	py_string_t *this_;
+	assert_argc(argc, 1);
+    this_ = $(argv[0]);
 
-    py_string_t *that = py_string_new(this->value); 
-    for (char *p = that->value; *p; p++)
+    that = py_string_new(this_->value); 
+    for (p = that->value; *p; p++)
         *p = tolower((int)*p);
     return $(that);
 }
 
 py_object_t *py_string_upper(int argc, py_object_t *argv[])
 {
+	py_string_t *that;
+	char *p;
+	py_string_t *this_;
     assert_argc(argc, 1);
-    py_string_t *this = $(argv[0]);
+    this_ = $(argv[0]);
 
-    py_string_t *that = py_string_new(this->value); 
-    for (char *p = that->value; *p; p++)
+    that = py_string_new(this_->value); 
+    for (p = that->value; *p; p++)
         *p = toupper((int)*p);
     return $(that);
 }
 
 py_object_t *py_string_add(int argc, py_object_t *argv[])
 {
+	py_string_t *target;
+	char *buf;
+	int that_size;
+	int this_size;
+	py_string_t *that;
+	py_string_t *this_;
     assert_argc(argc, 2);
-    py_string_t *this = cast_object(argv[0], string);
-    py_string_t *that = cast_object(argv[1], string);
+    this_ = cast_object_string(argv[0]);
+    that = cast_object_string(argv[1]);
 
-    int this_size = strlen(this->value);
-    int that_size = strlen(that->value);
-    char buf[this_size + that_size + 1];
-    strcpy(buf, this->value);
+    this_size = strlen(this_->value);
+    that_size = strlen(that->value);
+    buf = (char *)malloc((this_size + that_size + 1) * sizeof(char));
+    strcpy(buf, this_->value);
     strcat(buf, that->value);
-    py_string_t *target = py_string_new(buf);
+    target = py_string_new(buf);
+	free(buf);
     return $(target);
 }
 
 py_object_t *py_string_len(int argc, py_object_t *argv[])
 {
+	py_double_t *py_result;
+	int len;
+	py_string_t *this_;
     assert_argc(argc, 1);
-    py_string_t *this = $(argv[0]);
+    this_ = $(argv[0]);
 
-    int len = strlen(this->value);
-    py_double_t *py_result = py_double_new(len);
+    len = strlen(this_->value);
+    py_result = py_double_new(len);
     return $(py_result);
 }
 
 py_object_t *py_string_str(int argc, py_object_t *argv[])
 {
+	py_string_t *this_;
     assert_argc(argc, 1);
-    py_string_t *this = $(argv[0]);
-    return $(this);
+    this_ = $(argv[0]);
+    return $(this_);
 }
 
 py_string_t *arg_to_string(py_object_t *args, int index)
@@ -109,10 +130,10 @@ py_string_t *arg_to_string(py_object_t *args, int index)
 
 py_object_t *py_string_eq(int argc, py_object_t *argv[])
 {
-    py_string_t *this = cast_object(argv[0], string);
-    py_string_t *that = cast_object(argv[1], string);
+    py_string_t *this_ = cast_object_string(argv[0]);
+    py_string_t *that = cast_object_string(argv[1]);
 
-    if (strcmp(this->value, that->value) == 0)
+    if (strcmp(this_->value, that->value) == 0)
         return py_true;
     else
         return py_false;
@@ -120,10 +141,10 @@ py_object_t *py_string_eq(int argc, py_object_t *argv[])
 
 py_object_t *py_string_ne(int argc, py_object_t *argv[])
 {
-    py_string_t *this = cast_object(argv[0], string);
-    py_string_t *that = cast_object(argv[1], string);
+    py_string_t *this_ = cast_object_string(argv[0]);
+	py_string_t *that = cast_object_string(argv[1]);
 
-    if (strcmp(this->value, that->value) != 0)
+    if (strcmp(this_->value, that->value) != 0)
         return py_true;
     else
         return py_false;
@@ -131,15 +152,20 @@ py_object_t *py_string_ne(int argc, py_object_t *argv[])
 
 py_object_t *py_string_mod(int argc, py_object_t *argv[])
 {
-    assert_argc(argc, 2);
-    py_string_t *this = $(argv[0]);
-    py_object_t *args = argv[1];
- 
-    int index = 0;
+	char *p;
+	py_string_t *that;
+	int index = 0;
     text_t text;
+    py_object_t *args;
+	py_string_t *this_;
+    assert_argc(argc, 2);
+    this_ = $(argv[0]);
+    args = argv[1];
+ 
     text_init(&text);
-    for (char *p = this->value; *p; p++) {
-        char c = *p;
+    for (p = this_->value; *p; p++) {
+        py_string_t *py_string;
+		char c = *p;
         if (c != '%') {
             text_put_char(&text, c);
             continue;
@@ -157,13 +183,13 @@ py_object_t *py_string_mod(int argc, py_object_t *argv[])
             vm_throw(py_type_error);
         }
 
-        py_string_t *py_string = arg_to_string(args, index);
+        py_string = arg_to_string(args, index);
         if (py_string == NULL)
             vm_rethrow();
         index++;
         text_put_string(&text, py_string->value);
     }
-    py_string_t *that = py_string_new(text.data);
+    that = py_string_new(text.data);
     text_destroy(&text);
 
     return $(that);
@@ -171,16 +197,20 @@ py_object_t *py_string_mod(int argc, py_object_t *argv[])
 
 py_object_t *py_string_join(int argc, py_object_t *argv[])
 {
-    assert_argc(argc, 2);
-    py_string_t *this = $(argv[0]);
-    py_list_t *py_list = cast_object(argv[1], list);
-
+	py_string_t *py_result;
+	int last;
+	int i;
+    py_object_t *py_item;
     text_t text;
+    py_list_t *py_list;
+	py_string_t *this_;
+    assert_argc(argc, 2);
+	this_ = $(argv[0]);
+    py_list = cast_object_list(argv[1]);
+
     text_init(&text);
 
-    int i;
-    py_object_t *py_item;
-    int last = py_list->vector.count - 1;
+    last = py_list->vector.count - 1;
     vector_each(&py_list->vector, i, py_item) {
         if (py_item->py_class != py_string_class) {
             text_destroy(&text);
@@ -189,94 +219,111 @@ py_object_t *py_string_join(int argc, py_object_t *argv[])
 
         text_put_string(&text, ((py_string_t *)py_item)->value);
         if (i != last)
-            text_put_string(&text, this->value);
+            text_put_string(&text, this_->value);
     }
 
-    py_string_t *py_result = py_string_new(text.data);
+    py_result = py_string_new(text.data);
     text_destroy(&text);
     return $(py_result);
 }
 
-py_object_t *py_string_get_single(py_string_t *this, py_object_t *py_index)
+py_object_t *py_string_get_single(py_string_t *this_, py_object_t *py_index)
 {
+	py_string_t *that;
+    char buffer[2];
     int index = cast_integer(py_index);
-    int len = strlen(this->value);
+    int len = strlen(this_->value);
     if (index < 0 || index >= len)
         vm_throw(py_index_error);
 
-    char buffer[2];
-    buffer[0] = this->value[index];
+    buffer[0] = this_->value[index];
     buffer[1] = 0;
-    py_string_t *that = py_string_new(buffer);
+    that = py_string_new(buffer);
     return $(that);
 }
 
-py_object_t *py_string_get_slice(py_string_t *this, py_object_t *py_index)
+py_object_t *py_string_get_slice(py_string_t *this_, py_object_t *py_index)
 {
+	py_string_t *that;
+	char *buffer;
     py_slice_t *py_slice = $(py_index);
     int start;
     int stop;
-    int len = strlen(this->value);
+    int len = strlen(this_->value);
     if (py_slice_parse(py_slice, &start, &stop, len) != NULL)
         vm_rethrow();
 
-    char buffer[stop - start + 1];
-    memcpy(buffer, this->value + start, stop - start);
+    buffer = (char *)malloc((stop - start + 1) * sizeof(char));
+    memcpy(buffer, this_->value + start, stop - start);
     buffer[stop - start] = 0;
-    py_string_t *that = py_string_new(buffer);
-    return $(that);
+    that = py_string_new(buffer);
+	free(buffer);
+	return $(that);
 }
 
 py_object_t *py_string_get_item(int argc, py_object_t *argv[])
 {
+	py_object_t *py_index;
+	py_string_t *this_;
     assert_argc(argc, 2);
-    py_string_t *this = $(argv[0]);
-    py_object_t *py_index = argv[1];
+    this_ = $(argv[0]);
+    py_index = argv[1];
 
     if (py_index->py_class == py_double_class)
-        return py_string_get_single(this, py_index);
+        return py_string_get_single(this_, py_index);
 
     if (py_index->py_class == py_slice_class)
-        return py_string_get_slice(this, py_index);
+        return py_string_get_slice(this_, py_index);
 
     vm_throw(py_type_error);
 }
 
 py_object_t *py_string_split(int argc, py_object_t *argv[])
 {
-    assert_argc(argc, 2);
-    py_string_t *this = $(argv[0]);
-    char *delimit = cast_string(argv[1]);
+	char *token;
+	py_list_t *py_list;
+	char *buffer;
+	int length;
+	char *delimit;
+    py_string_t *this_;
+	assert_argc(argc, 2);
+    this_ = $(argv[0]);
+    delimit = cast_string(argv[1]);
 
-    int length = strlen(this->value); 
-    char buffer[length];
-    strcpy(buffer, this->value);
+    length = strlen(this_->value); 
+    buffer = (char *)malloc(length * sizeof(char));
+    strcpy(buffer, this_->value);
 
-    py_list_t *py_list = py_list_new(0);
-    char *token = strtok(buffer, delimit);
+    py_list = py_list_new(0);
+    token = strtok(buffer, delimit);
     while (token != NULL) {
         py_string_t *py_item = py_string_new(token);
         py_list_push_back(py_list, $(py_item));
         token = strtok(NULL, delimit);
     }
-
+	free(buffer);
     return $(py_list);
 }
 
 py_object_t *py_string_find(int argc, py_object_t *argv[])
 {
+	py_double_t *py_index;
+	char *substr;
+	int index;
+    char *haystack;
+	char *needle;
+	py_string_t *this_;
     assert_argc(argc, 2);
-    py_string_t *this = $(argv[0]);
-    char *needle = cast_string(argv[1]);
-    char *haystack = this->value;
+    this_ = $(argv[0]);
+    needle = cast_string(argv[1]);
+    haystack = this_->value;
 
-    int index;
-    char *substr = strstr(haystack, needle);
+    substr = strstr(haystack, needle);
     if (substr == NULL)
         index = -1;
     else
         index = substr - haystack;
-    py_double_t *py_index = py_double_new(index);
+    py_index = py_double_new(index);
 
     return $(py_index);
 }
@@ -299,9 +346,9 @@ native_t py_string_natives[] = {
     {NULL}
 };
 
-void py_string_free(py_string_t *this)
+void py_string_free(py_string_t *this_)
 {
-    free(this->value);
+    free(this_->value);
 }    
 
 void py_string_class_init(void)

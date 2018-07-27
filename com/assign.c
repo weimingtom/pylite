@@ -22,7 +22,7 @@ void store_operand(lambda_t *lambda, operand_t *target)
             break;
 
         default:
-            assert(false);
+            assert(0);
     }
 }
 
@@ -42,7 +42,7 @@ int translate_assign_operator(ast_t *operator)
         map(TOKEN_XOR_ASSIGN, OP_XOR);
         map(TOKEN_OR_ASSIGN, OP_OR);
     }
-    assert(false);
+    assert(0);
     return 0;
 }
 #undef map
@@ -53,10 +53,11 @@ void unpack_tuple(lambda_t *lambda, ast_t *left)
     ast_t *id;
 
     ast_each_child (left, i, id) {
-        emit_insn(OP_LOAD_CONST, "%d", i);
+        operand_t *target;
+		emit_insn(OP_LOAD_CONST, "%d", i);
         emit_insn(OP_DUP_TOP, "%i", 1);
         emit_insn(OP_LOAD_ITEM, NULL);
-        operand_t *target = compile_express(lambda, id);
+        target = compile_express(lambda, id);
         store_operand(lambda, target);
     }
 }

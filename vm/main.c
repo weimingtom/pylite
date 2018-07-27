@@ -24,16 +24,17 @@ char **program_argv;
 
 int main(int argc, char *argv[])
 {
+	void *dummy;
+    char *input_path;
     program_argc = argc;
     program_argv = argv;
     if (argc == 1)
         usage();
-    char *input_path = argv[1];
+    input_path = argv[1];
 
     check_compiler();
     xml_stdout = xml_file_new("/dev/stdout");
 
-    void *dummy;
     c_stack_high = &dummy;
     gc_setup(1024 * 1024);
 

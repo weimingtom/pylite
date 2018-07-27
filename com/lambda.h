@@ -29,12 +29,12 @@ typedef struct lambda {
 } lambda_t;
 
 extern lambda_t *lambda_new(char *name);
-extern void lambda_output(lambda_t *this, xml_file_t *xml_file);
-extern void lambda_emit_insn(lambda_t *this, int opcode, char *format, ...);
+extern void lambda_output(lambda_t *this_, xml_file_t *xml_file);
+extern void lambda_emit_insn(lambda_t *this_, int opcode, char *format, ...);
 
-extern int lambda_new_local(lambda_t *this);
-extern void lambda_emit_label(lambda_t *this, operand_t *label);
-extern operand_t *lambda_new_label(lambda_t *this);
-extern int lambda_add_const(lambda_t *this, operand_t *operand);
+extern int lambda_new_local(lambda_t *this_);
+extern void lambda_emit_label(lambda_t *this_, operand_t *label);
+extern operand_t *lambda_new_label(lambda_t *this_);
+extern int lambda_add_const(lambda_t *this_, operand_t *operand);
 
 #endif

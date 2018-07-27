@@ -83,6 +83,7 @@ void compile_finally_clause(lambda_t *lambda, ast_t *ast)
  */
 void try_finally(lambda_t *lambda, ast_t *try_clause, ast_t *finally_clause)
 {
+	int temp;
     operand_t *start_label = new_label();
     operand_t *end_label = new_label();
     operand_t *handler_label = new_label();
@@ -101,7 +102,7 @@ void try_finally(lambda_t *lambda, ast_t *try_clause, ast_t *finally_clause)
     emit_label(end_label);
     emit_insn(OP_JMP, "%o", exit_label);
 
-    int temp = lambda_new_local(lambda);
+    temp = lambda_new_local(lambda);
     emit_label(handler_label);
     emit_insn(OP_STORE_LOCAL, "%i", temp);
     compile_finally_clause(lambda, finally_clause);
@@ -113,6 +114,8 @@ void try_finally(lambda_t *lambda, ast_t *try_clause, ast_t *finally_clause)
 
 void compile_try_clause(lambda_t *lambda, ast_t *ast)
 {
+	ast_t *inner;
+    ast_t *outter;
     ast_t *try_clause = ast_get_child(ast, 0);
     ast_t *except_clause = ast_get_child(ast, 1);
     ast_t *finally_clause = ast_get_child(ast, 2);
@@ -145,8 +148,8 @@ void compile_try_clause(lambda_t *lambda, ast_t *ast)
     //          print 'except'
     //  finally:
     //      print 'finally'
-    ast_t *inner = ast_new(AST_TRY_CLAUSE, 3, try_clause, except_clause, NULL);
-    ast_t *outter = ast_new(AST_TRY_CLAUSE, 3, inner, NULL, finally_clause);
+    inner = ast_new(AST_TRY_CLAUSE, 3, try_clause, except_clause, NULL);
+    outter = ast_new(AST_TRY_CLAUSE, 3, inner, NULL, finally_clause);
     ast_locate(outter, NULL);
     compile_try_clause(lambda, outter);
 }

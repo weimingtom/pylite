@@ -1,0 +1,178 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\com\assign.c" />
+    <ClCompile Include="..\..\com\ast.c" />
+    <ClCompile Include="..\..\com\branch.c" />
+    <ClCompile Include="..\..\com\compile.c" />
+    <ClCompile Include="..\..\com\except.c" />
+    <ClCompile Include="..\..\com\express.c" />
+    <ClCompile Include="..\..\com\insn.c" />
+    <ClCompile Include="..\..\com\lambda.c" />
+    <ClCompile Include="..\..\com\lex.c" />
+    <ClCompile Include="..\..\com\loop.c" />
+    <ClCompile Include="..\..\com\main.c" />
+    <ClCompile Include="..\..\com\opcode.c" />
+    <ClCompile Include="..\..\com\operand.c" />
+    <ClCompile Include="..\..\com\scope.c" />
+    <ClCompile Include="..\..\com\symbol.c" />
+    <ClCompile Include="..\..\com\trace.c" />
+    <ClCompile Include="..\..\gen\gram.tab.c" />
+    <ClCompile Include="..\..\utils\list.c" />
+    <ClCompile Include="..\..\utils\stack.c" />
+    <ClCompile Include="..\..\utils\text.c" />
+    <ClCompile Include="..\..\utils\xml_file.c" />
+    <ClCompile Include="..\..\utils\xml_lex.c" />
+    <ClCompile Include="..\..\utils\xml_tree.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\com\assign.h" />
+    <ClInclude Include="..\..\com\ast.h" />
+    <ClInclude Include="..\..\com\branch.h" />
+    <ClInclude Include="..\..\com\compile.h" />
+    <ClInclude Include="..\..\com\except.h" />
+    <ClInclude Include="..\..\com\express.h" />
+    <ClInclude Include="..\..\com\insn.h" />
+    <ClInclude Include="..\..\com\lambda.h" />
+    <ClInclude Include="..\..\com\lex.h" />
+    <ClInclude Include="..\..\com\loop.h" />
+    <ClInclude Include="..\..\com\opcode.h" />
+    <ClInclude Include="..\..\com\operand.h" />
+    <ClInclude Include="..\..\com\root.h" />
+    <ClInclude Include="..\..\com\scope.h" />
+    <ClInclude Include="..\..\com\symbol.h" />
+    <ClInclude Include="..\..\com\trace.h" />
+    <ClInclude Include="..\..\gen\gram.tab.h" />
+    <ClInclude Include="..\..\utils\list.h" />
+    <ClInclude Include="..\..\utils\stack.h" />
+    <ClInclude Include="..\..\utils\text.h" />
+    <ClInclude Include="..\..\utils\vector.h" />
+    <ClInclude Include="..\..\utils\xml_file.h" />
+    <ClInclude Include="..\..\utils\xml_lex.h" />
+    <ClInclude Include="..\..\utils\xml_tree.h" />
+    <ClInclude Include="..\..\vm\alloc.h" />
+    <ClInclude Include="..\..\vm\asm.h" />
+    <ClInclude Include="..\..\vm\bool.h" />
+    <ClInclude Include="..\..\vm\byte.h" />
+    <ClInclude Include="..\..\vm\cast.h" />
+    <ClInclude Include="..\..\vm\class.h" />
+    <ClInclude Include="..\..\vm\compile.h" />
+    <ClInclude Include="..\..\vm\dict.h" />
+    <ClInclude Include="..\..\vm\dispatch.h" />
+    <ClInclude Include="..\..\vm\double.h" />
+    <ClInclude Include="..\..\vm\error.h" />
+    <ClInclude Include="..\..\vm\file.h" />
+    <ClInclude Include="..\..\vm\gc.h" />
+    <ClInclude Include="..\..\vm\lambda.h" />
+    <ClInclude Include="..\..\vm\list.h" />
+    <ClInclude Include="..\..\vm\method.h" />
+    <ClInclude Include="..\..\vm\mod.h" />
+    <ClInclude Include="..\..\vm\module.h" />
+    <ClInclude Include="..\..\vm\mod_builtin.h" />
+    <ClInclude Include="..\..\vm\mod_math.h" />
+    <ClInclude Include="..\..\vm\mod_os.h" />
+    <ClInclude Include="..\..\vm\mod_socket.h" />
+    <ClInclude Include="..\..\vm\mod_sys.h" />
+    <ClInclude Include="..\..\vm\mod_temp.h" />
+    <ClInclude Include="..\..\vm\native.h" />
+    <ClInclude Include="..\..\vm\none.h" />
+    <ClInclude Include="..\..\vm\object.h" />
+    <ClInclude Include="..\..\vm\objects.h" />
+    <ClInclude Include="..\..\vm\opcode.h" />
+    <ClInclude Include="..\..\vm\range.h" />
+    <ClInclude Include="..\..\vm\root.h" />
+    <ClInclude Include="..\..\vm\slice.h" />
+    <ClInclude Include="..\..\vm\socket.h" />
+    <ClInclude Include="..\..\vm\string.h" />
+    <ClInclude Include="..\..\vm\symbol.h" />
+    <ClInclude Include="..\..\vm\temp.h" />
+    <ClInclude Include="..\..\vm\tuple.h" />
+    <ClInclude Include="..\..\vm\vm.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\com\gram.y" />
+    <None Include="..\..\com\Grammar" />
+    <None Include="..\..\com\Makefile" />
+    <None Include="..\..\gen\gram.y" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{1048AFC1-E046-4676-8C33-1B3998A064FE}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>pycom</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v100</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v100</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../../gen;../..;../../com</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../../gen;../..;../../com</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

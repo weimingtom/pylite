@@ -1,7 +1,7 @@
 #include "root.h"
 #include "mod_builtin.h"
 #include "range.h"
-#include "list.h"
+#include "list_.h"
 #include "dict.h"
 #include "file.h"
 
@@ -9,39 +9,49 @@ py_module_t *py_builtin_module;
 
 py_object_t *py_builtin_len(int argc, py_object_t *argv[])
 {
+	py_object_t *py_result;
+	py_object_t *py_method;
+	py_object_t *this_;
     assert_argc(argc, 1);
-    py_object_t *this = argv[0];
+    this_ = argv[0];
 
-    py_object_t *py_method = py_object_load_field(this, py_symbol__len__);
+    py_method = py_object_load_field(this_, py_symbol__len__);
     if (py_method == NULL)
         vm_throw(py_attr_error);
 
-    py_object_t *py_result = vm_call(py_method, 0, argv);
+    py_result = vm_call(py_method, 0, argv);
     return py_result;
 }
 
 py_object_t *py_builtin_open(int argc, py_object_t *argv[])
 {
-    assert_argc(argc, 2);
-    py_object_t *py_path = argv[0];
-    py_object_t *py_mode = argv[1];
+	char *path;
+    char *mode;
+    py_file_t *py_file;
+    py_object_t *py_path;
+    py_object_t *py_mode;
+	assert_argc(argc, 2);
+    py_path = argv[0];
+    py_mode = argv[1];
 
     if (py_path->py_class != py_string_class)
         vm_throw(py_type_error);
     if (py_mode->py_class != py_string_class)
         vm_throw(py_type_error);
 
-    char *path = py_object_to_chars(py_path);
-    char *mode = py_object_to_chars(py_mode);
-    py_file_t *py_file = py_file_fopen(path, mode);
+    path = py_object_to_chars(py_path);
+    mode = py_object_to_chars(py_mode);
+    py_file = py_file_fopen(path, mode);
     return $(py_file);
 }
 
 py_object_t *py_builtin_isinstance(int argc, py_object_t *argv[])
 {
+    py_object_t *instance; 
+    py_object_t *prototype;
     assert_argc(argc, 2);
-    py_object_t *instance = argv[0]; 
-    py_object_t *prototype = argv[1];
+    instance = argv[0]; 
+    prototype = argv[1];
 
     if (!py_object_is_class(prototype))
         vm_throw(py_type_error);
@@ -54,17 +64,21 @@ py_object_t *py_builtin_isinstance(int argc, py_object_t *argv[])
 
 py_object_t *py_builtin_import(int argc, py_object_t *argv[])
 {
+	py_module_t *py_module;
+	py_string_t *py_name;
     assert_argc(argc, 1);
-    py_string_t *py_name = cast_object(argv[0], string);
-    py_module_t *py_module = load_py_module(".", py_name->value);
+    py_name = cast_object_string(argv[0]);
+    py_module = load_py_module(".", py_name->value);
     return $(py_module);
 }
 
 py_object_t *py_builtin_int(int argc, py_object_t *argv[])
 {
+	py_class_t *py_class;
+	py_object_t *arg;
     assert_argc(argc, 1);
-    py_object_t *arg = argv[0];
-    py_class_t *py_class = arg->py_class;
+    arg = argv[0];
+    py_class = arg->py_class;
 
     if (py_class == py_double_class)
         return arg;

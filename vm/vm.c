@@ -9,28 +9,31 @@
 py_object_t *vm_stack[VM_STACK_DEPTH];
 int sp = VM_STACK_DEPTH;
 
-static inline py_object_t *py_range_next_fast(py_range_t *this)
+static __inline py_object_t *py_range_next_fast(py_range_t *this_)
 {
-    if (this->cursor == this->end)
+	py_double_t *py_item;
+    if (this_->cursor == this_->end)
         vm_throw(py_stop_iteration);
-    py_double_t *py_item = py_double_new(this->cursor);
-    this->cursor += this->step;
+    py_item = py_double_new(this_->cursor);
+    this_->cursor += this_->step;
     return $(py_item);
 }
 
-static inline int load_short(char *pc)
+static __inline int load_short(char *pc)
 {
     unsigned char *p = (unsigned char *)pc;
     return (short)(p[0] + (p[1] << 8));
 }
 
-static inline py_object_t *unary_op(int opcode, arguments)
+static __inline py_object_t *unary_op(int opcode, arguments)
 {
+	py_object_t *py_object;
     assert(argc == 1);
-    py_object_t *py_object = argv[0];
+    py_object = argv[0];
 
     if (py_object_is_double(py_object)) {
-        int value = (int) ((py_double_t *)py_object)->value;
+        py_double_t *target;
+		int value = (int) ((py_double_t *)py_object)->value;
         switch (opcode) {
             case OP_COM:
                 value = ~value;
@@ -40,22 +43,25 @@ static inline py_object_t *unary_op(int opcode, arguments)
                 value = -value;
                 break;
         }
-        py_double_t *target = py_double_new(value);
+        target = py_double_new(value);
         return $(target);
     } else {
         vm_throw(py_type_error);
     }
-    assert(false);
+    assert(0);
 }
 
-static inline py_object_t *integer_op_integer(int opcode, arguments)
+static __inline py_object_t *integer_op_integer(int opcode, arguments)
 {
-    assert(argc == 2);
-    py_object_t *py_left = argv[0];
-    py_object_t *py_right = argv[1];
+    py_object_t *py_left;
+    py_object_t *py_right;
+	assert(argc == 2);
+    py_left = argv[0];
+    py_right = argv[1];
 
     if (py_object_is_double(py_left) && py_object_is_double(py_right)) {
-        int lvalue = (int) ((py_double_t *)py_left)->value;
+        py_double_t *target;
+		int lvalue = (int) ((py_double_t *)py_left)->value;
         int rvalue = (int) ((py_double_t *)py_right)->value;
         int value = 0;
         switch (opcode) {
@@ -79,26 +85,31 @@ static inline py_object_t *integer_op_integer(int opcode, arguments)
                 value = lvalue >> rvalue;
                 break;
         }
-        py_double_t *target = py_double_new(value);
+        target = py_double_new(value);
         return $(target);
     } else {
         vm_throw(py_type_error);
     }
 }
 
-static inline py_object_t *double_op_double(int opcode, arguments)
+static __inline py_object_t *double_op_double(int opcode, arguments)
 {
-    assert(argc == 2);
-    py_object_t *py_left = argv[0];
-    py_object_t *py_right = argv[1];
+    py_object_t *py_left;
+    py_object_t *py_right;
+	assert(argc == 2);
+    py_left = argv[0];
+    py_right = argv[1];
 
     if (py_object_is_double(py_left)) { 
-        if (!py_object_is_double(py_right))
+        double value;
+		double lvalue;
+        double rvalue;
+		if (!py_object_is_double(py_right))
             vm_throw(py_type_error);
-        double lvalue = ((py_double_t *)py_left)->value;
-        double rvalue = ((py_double_t *)py_right)->value;
+        lvalue = ((py_double_t *)py_left)->value;
+        rvalue = ((py_double_t *)py_right)->value;
 
-        double value = 0;
+        value = 0;
         switch (opcode) {
             case OP_ADD:
                 value = lvalue + rvalue;
@@ -124,6 +135,8 @@ static inline py_object_t *double_op_double(int opcode, arguments)
         }
         return $(py_double_new(value));
     } else {
+		py_object_t *py_field;
+		py_class_t *py_class;
         py_symbol_t *py_symbol;
         switch (opcode) {
             case OP_ADD:
@@ -146,15 +159,15 @@ static inline py_object_t *double_op_double(int opcode, arguments)
                 py_symbol = py_symbol__mod__;
                 break;
         }
-        py_class_t *py_class = py_left->py_class;
-        py_object_t *py_field = py_class_load_field(py_class, py_symbol);
+        py_class = py_left->py_class;
+        py_field = py_class_load_field(py_class, py_symbol);
         if (py_field == NULL)
             vm_throw(py_attr_error);
         return vm_call(py_field, 2, argv);
     }
 }
 
-static inline bool compute_bool(py_object_t *py_object)
+static __inline int compute_bool(py_object_t *py_object)
 {
     py_class_t *py_class = py_object->py_class;
 
@@ -164,15 +177,15 @@ static inline bool compute_bool(py_object_t *py_object)
     }
 
     if (py_class == py_none_class) {
-        return false;
+        return 0;
     }
 
     if (py_class == py_bool_class) {
         if (py_object == py_true)
-            return true;
+            return 1;
         if (py_object == py_false)
-            return false;
-        assert(false);
+            return 0;
+        assert(0);
     }
 
     if (py_class == py_string_class) {
@@ -180,20 +193,22 @@ static inline bool compute_bool(py_object_t *py_object)
         return strlen(py_string->value) > 0;
     }
 
-    return true;
+    return 1;
 }
 
-static inline bool jcompare(int opcode, arguments)
+static __inline int jcompare(int opcode, arguments)
 {
     py_object_t *py_left = argv[0];
     py_object_t *py_right = argv[1];
 
     if (py_object_is_double(py_left)) { 
-        if (!py_object_is_double(py_right))
-            vm_throw(py_type_error);
+        double rvalue;
+		double lvalue;
+		if (!py_object_is_double(py_right))
+            vm_throw_double(py_type_error);
 
-        double lvalue = ((py_double_t *)py_left)->value;
-        double rvalue = ((py_double_t *)py_right)->value;
+        lvalue = ((py_double_t *)py_left)->value;
+        rvalue = ((py_double_t *)py_right)->value;
         switch (opcode) {
             case OP_JLE:
                 return lvalue <= rvalue;
@@ -214,6 +229,10 @@ static inline bool jcompare(int opcode, arguments)
                 return lvalue >= rvalue;
         }
     } else {
+		int ok;
+        py_class_t *py_class;
+        py_object_t *py_field;
+		py_object_t *py_bool;
         py_symbol_t *py_symbol;
         switch (opcode) {
             case OP_JLE:
@@ -240,35 +259,37 @@ static inline bool jcompare(int opcode, arguments)
                 py_symbol = py_symbol__ge__;
                 break;
         }
-        py_class_t *py_class = py_left->py_class;
-        py_object_t *py_field = py_class_load_field(py_class, py_symbol);
+        py_class = py_left->py_class;
+        py_field = py_class_load_field(py_class, py_symbol);
         if (py_field == NULL)  // Ignore the error!
-            return false;
-        py_object_t *py_bool = vm_call(py_field, 2, argv);
+            return 0;
+        py_bool = vm_call(py_field, 2, argv);
         if (py_bool == NULL)  // Ignore the error!
-            return false;
-        bool ok = compute_bool(py_bool);
+            return 0;
+        ok = compute_bool(py_bool);
         return ok;
     }
 
-    assert(false);
-    return false;
+    assert(0);
+    return 0;
 }
 
 py_object_t *vm_call_class(py_class_t *py_class, arguments)
 {
+	py_object_t *py_result;
+	py_object_t *py_init;
     py_object_t *py_instance;
     if (py_class->py_alloc)
         py_instance = py_class->py_alloc(py_class);
     else
         py_instance = py_object_alloc(sizeof(py_object_t), py_class);
 
-    py_object_t *py_init = py_object_get_field($(py_class), py_symbol__init__);
+    py_init = py_object_get_field($(py_class), py_symbol__init__);
     if (py_init == NULL)
         return py_instance;
 
     vm_stack_push(py_instance);
-    py_object_t *py_result = vm_call(py_init, argc + 1, argv - 1);
+    py_result = vm_call(py_init, argc + 1, argv - 1);
     vm_stack_pop();
 
     if (py_result == NULL)
@@ -278,37 +299,44 @@ py_object_t *vm_call_class(py_class_t *py_class, arguments)
 
 py_object_t *vm_call_method(py_method_t *py_method, arguments)
 {
+	py_object_t *py_result;
     py_object_t *py_instance = py_method->py_object;
     py_object_t *py_callable = py_method->py_callable;
     vm_stack_push(py_instance);
-    py_object_t *py_result = vm_call(py_callable, argc + 1, argv - 1);
+    py_result = vm_call(py_callable, argc + 1, argv - 1);
     vm_stack_pop();
     return py_result;
 }
 
 void vm_alloc_local(py_lambda_t *py_lambda)
 {
+	int i;
     int bp = sp;
     sp -= py_lambda->local_count;
-    for (int i = sp; i < bp; i++)
+    for (i = sp; i < bp; i++)
         vm_stack[i] = py_none;
 }
 
 #define TRACE 0
 py_object_t *vm_call_lambda(py_lambda_t *py_lambda, arguments)
 {
+	int bp;
+	py_module_t *py_module;
+	py_object_t **const_vector;
+	char *py_code_vector;
+	int pc;
     assert(py_lambda->py_class == py_lambda_class);
     if (py_lambda->param_count != argc)
         vm_throw(py_type_error);
-    int bp = sp;
+    bp = sp;
 
-    py_module_t *py_module = py_lambda->py_module;
-    py_object_t **const_vector = py_lambda->const_vector.data;
-    char *py_code_vector = py_lambda->code_vector.data;
-    int pc = 0;
+    py_module = py_lambda->py_module;
+    const_vector = py_lambda->const_vector.data;
+    py_code_vector = py_lambda->code_vector.data;
+    pc = 0;
     vm_alloc_local(py_lambda);
 
-    while (true) {
+    while (1) {
         int opcode = (int) py_code_vector[pc];
 #if TRACE
         fprintf(stderr, "%s\n", opcode_array[opcode].name);
@@ -321,7 +349,7 @@ py_object_t *vm_call_lambda(py_lambda_t *py_lambda, arguments)
     return NULL;
 }
 
-static inline py_object_t *vm_call_native(py_native_t *py_native, arguments)
+static __inline py_object_t *vm_call_native(py_native_t *py_native, arguments)
 {
     handler_t handler = py_native->handler;
     return handler(argc, argv);
@@ -340,6 +368,6 @@ py_object_t *vm_call(py_object_t *py_callee, arguments)
     if (py_class == py_native_class)
         return vm_call_native($(py_callee), argc, argv);
 
-    assert(false);
+    assert(0);
     return NULL;
 }

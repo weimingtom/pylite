@@ -6,95 +6,113 @@ py_class_t *py_file_class;
 
 py_file_t *py_file_fopen(char *path, char *mode)
 {
+	py_file_t *this_;
     FILE *file = fopen(path, mode);
     if (file == NULL)
         vm_throw(py_io_error);
-    py_file_t *this = py_object_alloc(sizeof(py_file_t), py_file_class);
-    this->file = file;
-    return this;
+    this_ = py_object_alloc(sizeof(py_file_t), py_file_class);
+    this_->file = file;
+    return this_;
 }
 
 py_file_t *py_file_fdopen(int fd, char *mode)
 {
+	py_file_t *this_;
     FILE *file = fdopen(fd, mode);
     if (file == NULL)
         vm_throw(py_io_error);
-    py_file_t *this = py_object_alloc(sizeof(py_file_t), py_file_class);
-    this->file = file;
-    return this;
+    this_ = py_object_alloc(sizeof(py_file_t), py_file_class);
+    this_->file = file;
+    return this_;
 }
 
 py_object_t *py_file_read(int argc, py_object_t *argv[])
 {
+	py_string_t *py_string;
+	char *buffer;
+	int count;
+	py_file_t *this_;
     assert_argc(argc, 2);
-    py_file_t *this = $(argv[0]);
-    int count = cast_integer(argv[1]);
+    this_ = $(argv[0]);
+    count = cast_integer(argv[1]);
 
-    char buffer[count];
-    count = fread(buffer, 1, count, this->file);
+    buffer = (char *)malloc(count * sizeof(char));
+    count = fread(buffer, 1, count, this_->file);
     buffer[count] = 0;
 
-    py_string_t *py_string = py_string_new(buffer);
+    py_string = py_string_new(buffer);
+	free(buffer);
     return $(py_string);
 }
 
 py_object_t *py_file_write(int argc, py_object_t *argv[])
 {
+	char *string;
+	py_file_t *this_;
     assert_argc(argc, 2);
-    py_file_t *this = $(argv[0]);
-    char *string = cast_string(argv[1]);
+    this_ = $(argv[0]);
+    string = cast_string(argv[1]);
 
-    fputs(string, this->file); 
+    fputs(string, this_->file); 
     return py_none;
 }
 
 py_object_t *py_file_readline(int argc, py_object_t *argv[])
 {
-    assert_argc(argc, 1);
-    py_file_t *this = $(argv[0]);
-
+	py_string_t *py_string;
+	char *line;
+	py_file_t *this_;
     char buffer[1024];
-    char *line = fgets(buffer, sizeof(buffer), this->file);
+    assert_argc(argc, 1);
+    this_ = $(argv[0]);
+
+    line = fgets(buffer, sizeof(buffer), this_->file);
     if (line == NULL)
         vm_throw(py_io_error);
 
-    py_string_t *py_string = py_string_new(line);
+    py_string = py_string_new(line);
     return $(py_string);
 }
 
 py_object_t *py_file_flush(int argc, py_object_t *argv[])
 {
+	py_file_t *this_;
     assert_argc(argc, 1);
-    py_file_t *this = $(argv[0]);
-    fflush(this->file);
+    this_ = $(argv[0]);
+    fflush(this_->file);
     return py_none;
 }
 
 py_object_t *py_file_close(int argc, py_object_t *argv[])
 {
+	py_file_t *this_;
     assert(argc == 1);
-    py_file_t *this = $(argv[0]);
-    fclose(this->file);
+    this_ = $(argv[0]);
+    fclose(this_->file);
     return py_none;
 }
 
 py_object_t *py_file_iterator(int argc, py_object_t *argv[])
 {
+	py_file_t *this_;
     assert_argc(argc, 1);
-    py_file_t *this = $(argv[0]);
-    return $(this);
+    this_ = $(argv[0]);
+    return $(this_);
 }
 
 py_object_t *py_file_next(int argc, py_object_t *argv[])
 {
+	py_string_t *py_line;
+	char *line;
+	char buffer[1024];
+    py_file_t *this_;
     assert_argc(argc, 1);
-    py_file_t *this = $(argv[0]);
+    this_ = $(argv[0]);
 
-    char buffer[1024];
-    char *line = fgets(buffer, sizeof(buffer), this->file);
+    line = fgets(buffer, sizeof(buffer), this_->file);
     if (line == NULL)
         vm_throw(py_stop_iteration);
-    py_string_t *py_line = py_string_new(line);
+    py_line = py_string_new(line);
     return $(py_line);
 }
 

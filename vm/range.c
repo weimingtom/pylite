@@ -6,16 +6,17 @@ py_class_t *py_range_class;
 
 py_object_t *py_range_alloc(py_class_t *py_class)
 {
-    py_range_t *this = py_object_alloc(sizeof(py_range_t), py_class);
-    this->start = 0;
-    this->end = 0;
-    this->step = 1;
-    this->cursor = 0;
-    return $(this);
+    py_range_t *this_ = py_object_alloc(sizeof(py_range_t), py_class);
+    this_->start = 0;
+    this_->end = 0;
+    this_->step = 1;
+    this_->cursor = 0;
+    return $(this_);
 }
 
 py_object_t *py_range_init(int argc, py_object_t *argv[])
 {
+	py_range_t *this_;
     int start = 0;
     int end = 0;
     int step = 1;
@@ -40,40 +41,46 @@ py_object_t *py_range_init(int argc, py_object_t *argv[])
             vm_throw(py_type_error);
     }
 
-    py_range_t *this = $(argv[0]);
-    this->start = start;
-    this->end = end;
-    this->step = step;
-    return $(this);
+    this_ = $(argv[0]);
+    this_->start = start;
+    this_->end = end;
+    this_->step = step;
+    return $(this_);
 }
 
 py_object_t *py_range_len(int argc, py_object_t *argv[])
 {
+	py_double_t *py_result;
+	int len;
+	py_range_t *this_;
     assert_argc(argc, 1);
-    py_range_t *this = $(argv[0]);
+    this_ = $(argv[0]);
 
-    int len = (this->end - this->start) / this->step;
-    py_double_t *py_result = py_double_new(len);
+    len = (this_->end - this_->start) / this_->step;
+    py_result = py_double_new(len);
     return $(py_result);
 }
 
 py_object_t *py_range_iterator(int argc, py_object_t *argv[])
 {
+	py_range_t *this_;
     assert_argc(argc, 1);
-    py_range_t *this = $(argv[0]);
-    this->cursor = this->start;
-    return $(this);
+    this_ = $(argv[0]);
+    this_->cursor = this_->start;
+    return $(this_);
 }
 
 py_object_t *py_range_next(int argc, py_object_t *argv[])
 {
+	py_double_t *py_item;
+	py_range_t *this_;
     assert_argc(argc, 1);
-    py_range_t *this = $(argv[0]);
+    this_ = $(argv[0]);
 
-    if (this->cursor == this->end)
+    if (this_->cursor == this_->end)
         vm_throw(py_stop_iteration);
-    py_double_t *py_item = py_double_new(this->cursor);
-    this->cursor += this->step;
+    py_item = py_double_new(this_->cursor);
+    this_->cursor += this_->step;
     return $(py_item);
 }
 

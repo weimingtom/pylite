@@ -19,26 +19,27 @@ void gc_add_root(py_object_t *py_object)
     vector_push_back(&gc_root_vector, py_object);
 }
 
-void __gc_mark(py_object_t *this)
+void __gc_mark(py_object_t *this_)
 {
-    if (this->flags & GC_REACHABLE)
+	py_class_t *py_class;
+    int i;
+    field_t *field;
+    if (this_->flags & GC_REACHABLE)
         return;
-    this->flags |= GC_REACHABLE;
+    this_->flags |= GC_REACHABLE;
 
-    py_class_t *py_class = this->py_class;
+    py_class = this_->py_class;
     if (py_class == py_double_class)
         return;
 
-    int i;
-    field_t *field;
-    vector_each_address (&this->field_vector, i, field) {
+    vector_each_address (&this_->field_vector, i, field) {
         py_object_t *child = field->py_value;
         if ((child->flags & GC_REACHABLE) == 0)
             gc_mark(child);
     }
 
     if (py_class && py_class->gc_mark)
-        py_class->gc_mark(this);
+        py_class->gc_mark(this_);
 }
 
 void gc_found()
@@ -92,10 +93,11 @@ void gc_mark_root()
 
 void gc_mark_c_stack()
 {
+	void **slot;
     jmp_buf context;
     c_stack_low = &context;
 
-    for (void **slot = c_stack_low; (void *)slot < c_stack_high; slot++) {
+    for (slot = c_stack_low; (void *)slot < c_stack_high; slot++) {
         void *p = *slot;
         if (gc_guess_object(p))
             gc_mark(p);
@@ -104,7 +106,8 @@ void gc_mark_c_stack()
 
 void gc_mark_vm_stack()
 {
-    for (int i = sp; i < VM_STACK_DEPTH; i++)
+	int i;
+    for (i = sp; i < VM_STACK_DEPTH; i++)
         gc_mark(vm_stack[i]);
 }
 

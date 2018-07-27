@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pycom", "pycom\pycom.vcxproj", "{1048AFC1-E046-4676-8C33-1B3998A064FE}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pyvm", "pyvm\pyvm.vcxproj", "{D4B47DED-B6CF-4386-87E0-3F738D45E1F6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1048AFC1-E046-4676-8C33-1B3998A064FE}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1048AFC1-E046-4676-8C33-1B3998A064FE}.Debug|Win32.Build.0 = Debug|Win32
+		{1048AFC1-E046-4676-8C33-1B3998A064FE}.Release|Win32.ActiveCfg = Release|Win32
+		{1048AFC1-E046-4676-8C33-1B3998A064FE}.Release|Win32.Build.0 = Release|Win32
+		{D4B47DED-B6CF-4386-87E0-3F738D45E1F6}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D4B47DED-B6CF-4386-87E0-3F738D45E1F6}.Debug|Win32.Build.0 = Debug|Win32
+		{D4B47DED-B6CF-4386-87E0-3F738D45E1F6}.Release|Win32.ActiveCfg = Release|Win32
+		{D4B47DED-B6CF-4386-87E0-3F738D45E1F6}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

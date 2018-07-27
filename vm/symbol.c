@@ -68,15 +68,16 @@ void py_symbol_class_init(void)
 
 py_symbol_t *py_symbol_new(char *value)
 {
-    int i;
+    py_symbol_t *this_;
+	int i;
     py_symbol_t *py_symbol;
     vector_each (&py_symbol_vector, i, py_symbol) {
         if (strcmp(py_symbol->value, value) == 0)
             return py_symbol;
     }
 
-    py_symbol_t *this = py_object_alloc(sizeof(py_symbol_t), py_symbol_class);
-    this->value = strdup(value);
-    vector_push_back(&py_symbol_vector, this);
-    return this;
+    this_ = py_object_alloc(sizeof(py_symbol_t), py_symbol_class);
+    this_->value = strdup(value);
+    vector_push_back(&py_symbol_vector, this_);
+    return this_;
 }

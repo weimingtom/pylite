@@ -30,9 +30,9 @@ typedef struct {
     stack_template(xml_token_t *, token_stack);
 } xml_lex_t;
 
-extern xml_token_t *xml_lex_get_token(xml_lex_t *this);
-extern void xml_lex_unget_token(xml_lex_t *this, xml_token_t *token);
+extern xml_token_t *xml_lex_get_token(xml_lex_t *this_);
+extern void xml_lex_unget_token(xml_lex_t *this_, xml_token_t *token);
 extern xml_lex_t *xml_lex_new(char *file_name);
-extern void xml_lex_dump(xml_lex_t *this);
+extern void xml_lex_dump(xml_lex_t *this_);
 
 #endif

@@ -10,22 +10,22 @@
 extern py_object_t *vm_stack[VM_STACK_DEPTH];
 extern int sp;
 
-static inline void *vm_stack_top(int offset)
+static __inline void *vm_stack_top(int offset)
 {
     return vm_stack[sp + offset];
 }
 
-static inline void vm_stack_push(void *py_object)
+static __inline void vm_stack_push(void *py_object)
 {
-    vm_stack[--sp] = py_object;
+    vm_stack[--sp] = (py_object_t *)py_object;
 }
 
-static inline void *vm_stack_pop()
+static __inline void *vm_stack_pop()
 {
     return vm_stack[sp++];
 }
 
-static inline void vm_stack_eject(int count)
+static __inline void vm_stack_eject(int count)
 {
     sp += count;
 }

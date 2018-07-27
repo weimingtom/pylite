@@ -24,30 +24,30 @@
         if ((this)->capacity == 0) {                                \
             (this)->capacity = 2;                                   \
             vector_size = (this)->capacity * item_size;             \
-            (this)->data = malloc(vector_size);                     \
+            (this)->data = (void *)malloc(vector_size);                     \
         }                                                           \
         if ((this)->count >= (this)->capacity) {                    \
             (this)->capacity *= 2;                                  \
             vector_size = (this)->capacity * item_size;             \
-            (this)->data = realloc((this)->data, vector_size);      \
+            (this)->data = (void *)realloc((this)->data, vector_size);      \
         }                                                           \
         (this)->data[(this)->count] = (item);                       \
         (this)->count++;                                            \
     } while (0)
 
 #define vector_pop_back(this)                               \
-    ({                                                      \
-        assert((this)->count > 0);                          \
-        (this)->count--;                                    \
-        (this)->data[(this)->count];                        \
-    })
+    (                                                      \
+        assert((this)->count > 0),                          \
+        (this)->count--,                                    \
+        (this)->data[(this)->count]                        \
+    )
 
 #define vector_get(this, index)                             \
-    ({                                                      \
-        assert((index) >= 0);                               \
-        assert((index) < (this)->count);                    \
-        (this)->data[(index)];                              \
-    })
+    (                                                      \
+        assert((index) >= 0),                               \
+        assert((index) < (this)->count),                    \
+        (this)->data[(index)]                              \
+    )
 
 #define vector_set(this, index, item)                       \
     do {                                                    \

@@ -3,7 +3,7 @@
 
 #include <assert.h>
 #include <ctype.h>
-#include <stdbool.h>
+//#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -34,6 +34,6 @@
 
 #define array_count(array) sizeof(array)/sizeof(array[0])
 #define $(pointer) ((void *)(pointer))
-extern bool trigger;
+extern int trigger;
 
 #endif

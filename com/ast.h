@@ -68,18 +68,18 @@ typedef struct ast {
 #define ast_each_child(ast, i, child) \
     vector_each(&ast->child_vector, i, child)
 
-extern ast_t *ast_add_child(ast_t *this, ast_t *child);
-extern ast_t *ast_prepend_child(ast_t *this, ast_t *child);
+extern ast_t *ast_add_child(ast_t *this_, ast_t *child);
+extern ast_t *ast_prepend_child(ast_t *this_, ast_t *child);
 extern ast_t *ast_new(int type, int count, ...);
 extern ast_t *ast_new_token(int token);
-extern int ast_is_token(ast_t *this, int token);
-extern void ast_dump(ast_t *this, xml_file_t *xml_file);
-extern char *ast_name(ast_t *this);
+extern int ast_is_token(ast_t *this_, int token);
+extern void ast_dump(ast_t *this_, xml_file_t *xml_file);
+extern char *ast_name(ast_t *this_);
 
-extern int ast_child_count(ast_t *this);
-extern ast_t *ast_get_child(ast_t *this, int index);
-extern void ast_set_child(ast_t *this, int index, ast_t *child);
-extern ast_t *ast_get_last_child(ast_t *this);
-extern void ast_locate(ast_t *this, char *file_name);
+extern int ast_child_count(ast_t *this_);
+extern ast_t *ast_get_child(ast_t *this_, int index);
+extern void ast_set_child(ast_t *this_, int index, ast_t *child);
+extern ast_t *ast_get_last_child(ast_t *this_);
+extern void ast_locate(ast_t *this_, char *file_name);
 
 #endif

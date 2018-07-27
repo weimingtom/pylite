@@ -59,7 +59,8 @@ opcode_t opcode_array[] = {
 
 opcode_t *lookup_opcode(char *name)
 {
-    for (int i = 0; i < OP_COUNT; i++) {
+	int i;
+    for (i = 0; i < OP_COUNT; i++) {
         opcode_t *opcode = opcode_array + i;
         if (strcmp(opcode->name, name) == 0) 
             return opcode;

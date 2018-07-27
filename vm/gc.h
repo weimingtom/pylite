@@ -10,15 +10,15 @@
 #define GC_LIVE_MAGIC 0x115E9700
 #define GC_REACHABLE 0x1
 
-extern void __gc_mark(py_object_t *this);
-static inline void gc_mark(py_object_t *this)
+extern void __gc_mark(py_object_t *this_);
+static __inline void gc_mark(py_object_t *this_)
 {
-    if (this->py_class == py_double_class) {
-        this->flags |= GC_REACHABLE;
+    if (this_->py_class == py_double_class) {
+        this_->flags |= GC_REACHABLE;
         return;
     }
 
-    __gc_mark(this);
+    __gc_mark(this_);
 }
 extern void gc_sweep();
 extern void gc_start();
